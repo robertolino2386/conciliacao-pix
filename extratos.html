@@ -3,74 +3,1411 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Importação de extratos PIX da Copastur">
+  <meta name="description" content="Importação e consulta de extratos PIX da Copastur">
   <title>Conciliação PIX - Copastur | Extratos</title>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
-    :root{--primary:#00a99d;--primary-dark:#007d86;--navy:#063e52;--text:#183744;--muted:#75858d;--border:#dfe8e9;--page:#f3f8f8;--card:#fff;--soft:#e8f7f4;--danger:#d55353;--shadow:0 12px 35px rgba(13,64,75,.08)}
-    *{box-sizing:border-box}body{margin:0;font-family:Inter,"Segoe UI",Arial,sans-serif;background:var(--page);color:var(--text)}button,input{font:inherit}.app{display:grid;grid-template-columns:250px 1fr;min-height:100vh;transition:grid-template-columns .25s ease}.sidebar{position:sticky;top:0;height:100vh;padding:26px 18px 20px;background:linear-gradient(170deg,#073e53 0%,#00636d 62%,#00837d 100%);color:#fff;display:flex;flex-direction:column;box-shadow:8px 0 24px #073e531f;z-index:5;transition:padding .25s ease}.sidebar-toggle{position:absolute;top:19px;right:-16px;width:32px;height:32px;padding:0;border:1px solid #b8e3df;border-radius:50%;background:var(--card);color:var(--primary-dark);box-shadow:0 5px 16px rgba(0,63,67,.18);display:grid;place-items:center;cursor:pointer;z-index:10;transition:transform .25s ease,background .2s ease,color .2s ease}.sidebar-toggle:hover{background:var(--primary);color:#fff}.sidebar-toggle svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.brand{display:flex;gap:12px;align-items:center;padding:0 8px 25px;border-bottom:1px solid #ffffff24}.brand img{width:44px;height:44px;object-fit:contain;border-radius:12px;background:#ffffff12;padding:5px}.brand strong,.brand small{display:block}.brand strong{font-size:16px}.brand small{font-size:9px;letter-spacing:1.7px;color:#9bdad7;margin-top:5px}.menu{margin-top:27px}.menu>span{display:block;font-size:9px;letter-spacing:1.8px;color:#80c7c8;margin:0 12px 12px}.menu a{width:100%;height:46px;border-radius:10px;color:#c5dee0;display:flex;align-items:center;gap:12px;padding:0 14px;margin:4px 0;text-decoration:none;font-size:13px}.menu a svg{width:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.menu a:hover{background:#ffffff12;color:#fff}.menu a.active{background:linear-gradient(90deg,#08a99e,#00a395a8);color:#fff;box-shadow:0 7px 18px #003e4759}.menu .badge{margin-left:auto;width:19px;height:19px;border-radius:50%;background:#ff6c6c;display:grid;place-items:center;font-size:9px}.side-bottom{margin-top:auto}.theme-switch{border:1px solid #ffffff2b;background:#003c4b8a;color:#ddf1f1;width:100%;height:43px;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer}.toggle{width:34px;height:18px;border-radius:20px;background:#082f3e;padding:3px}.toggle i{display:block;width:12px;height:12px;border-radius:50%;background:#0fc0af;transition:.2s}.copastur{border-top:1px solid #ffffff22;margin-top:17px;padding-top:18px;display:flex;align-items:center;justify-content:center}.copastur img{max-width:128px;max-height:42px;object-fit:contain}.main{min-width:0;display:flex;flex-direction:column}.topbar{height:108px;background:var(--card);border-bottom:1px solid var(--border);padding:22px 40px;display:flex;justify-content:space-between;align-items:center}.eyebrow{font-size:9px;font-weight:800;letter-spacing:2px;color:var(--primary);margin:0 0 6px}.topbar h1{font-size:25px;letter-spacing:-.5px;margin:0}.topbar h1 span{font-weight:400}.subtitle{font-size:11px;color:var(--muted);margin:5px 0 0}.avatar{width:39px;height:39px;border-radius:12px;background:var(--navy);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:800}.content{width:100%;max-width:1340px;margin:auto;padding:28px 40px}.steps{background:var(--card);border:1px solid var(--border);border-radius:14px;min-height:76px;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;padding:14px 24px}.step{display:flex;align-items:center;gap:10px;color:var(--muted);min-width:170px}.step b{width:30px;height:30px;border-radius:50%;background:#edf2f2;display:grid;place-items:center;font-size:12px}.step div{font-size:12px;font-weight:700}.step small{display:block;font-size:9px;font-weight:400;margin-top:3px}.step.current{color:var(--text)}.step.current b{background:var(--primary);color:#fff}.steps>i{height:1px;width:70px;background:var(--border);margin:0 20px}.section-title{display:flex;justify-content:space-between;align-items:end;margin:27px 1px 18px}.section-title h2{font-size:20px;margin:0 0 5px}.section-title p{font-size:12px;color:var(--muted);margin:0}.secure{color:#268a79;background:#e4f5f1;padding:7px 11px;border-radius:20px;font-size:10px;font-weight:700}.workspace{display:grid;grid-template-columns:minmax(0,1fr) 370px;gap:20px}.upload-card,.columns-card,.preview-card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow)}.upload-card{padding:20px}.dropzone{min-height:320px;border:1.5px dashed #98c8c5;border-radius:13px;background:linear-gradient(145deg,var(--soft),var(--card));display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;cursor:pointer;transition:.2s}.dropzone.drag,.dropzone:hover{border-color:var(--primary);transform:translateY(-1px)}.dropzone input{display:none}.upload-icon{width:55px;height:55px;border-radius:17px;background:#d8f3ef;color:var(--primary);display:grid;place-items:center;margin-bottom:15px}.upload-icon svg{width:25px;fill:none;stroke:currentColor;stroke-width:1.8}.dropzone h3{font-size:15px;margin:0 0 6px}.dropzone p{font-size:11px;color:var(--muted);margin:0 0 16px}.select-btn,.send-btn{border:0;border-radius:9px;background:var(--primary);color:#fff;font-size:11px;font-weight:750;padding:10px 19px;cursor:pointer;box-shadow:0 7px 16px #03a99a36}.dropzone small{font-size:9px;color:#90a0a5;margin-top:13px}.message{display:none;margin-top:15px;padding:12px 14px;border-radius:10px;font-size:10px;line-height:1.5}.message.show{display:block}.message.success{background:#e7f7f2;color:#267867}.message.error{background:#fff0f0;color:#a84343}.columns-card{padding:18px 19px}.columns-head{display:flex;align-items:center;gap:10px;padding-bottom:14px;border-bottom:1px solid var(--border)}.columns-head .check{width:34px;height:34px;border-radius:9px;background:var(--soft);color:var(--primary);display:grid;place-items:center;font-weight:900}.columns-head h3{font-size:13px;margin:0}.columns-head p{font-size:9px;color:var(--muted);margin:3px 0 0}.columns-card ul{list-style:none;padding:0;margin:8px 0 0}.columns-card li{min-height:44px;border-bottom:1px solid var(--border);display:flex;align-items:center;font-size:10px}.columns-card li:last-child{border:0}.columns-card li b{width:24px;height:24px;border-radius:6px;background:var(--soft);color:var(--primary);display:grid;place-items:center;font-size:9px;margin-right:10px}.columns-card li div{min-width:0}.columns-card li strong{display:block;font-size:10px}.columns-card li small{display:block;margin-top:3px;color:var(--muted);font-size:8px}.columns-card li i{margin-left:auto;color:var(--primary);font-style:normal;font-weight:900}.preview-card{display:none;margin-top:20px;overflow:hidden}.preview-card.show{display:block}.preview-head{padding:17px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)}.preview-head h3{font-size:13px;margin:0}.preview-head span{font-size:9px;color:var(--muted)}.table-wrap{overflow:auto;max-height:360px}table{border-collapse:collapse;width:100%;font-size:10px;white-space:nowrap}th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left}th{position:sticky;top:0;background:var(--soft);color:var(--primary-dark);font-size:9px}td{color:var(--text)}.type{display:inline-flex;padding:4px 8px;border-radius:20px;font-size:9px;font-weight:750}.type.credito{background:#e3f5ef;color:#247b66}.type.debito{background:#ffeded;color:#aa4343}.amount.credito{color:#247b66;font-weight:800}.amount.debito{color:#aa4343;font-weight:800}.actions{display:flex;justify-content:space-between;align-items:center;padding:16px 20px}.actions p{font-size:9px;color:var(--muted);margin:0}.send-btn:disabled{background:#b9c7c8;cursor:not-allowed;box-shadow:none}.footer{margin-top:auto;padding:13px 40px;border-top:1px solid var(--border);display:flex;justify-content:space-between;color:var(--muted);font-size:8px}
-    body.dark{--text:#eff9f9;--muted:#aec3c6;--border:#294d54;--page:#071c22;--card:#102e35;--soft:#153e3e;--shadow:0 14px 35px rgba(0,0,0,.25)}body.dark .toggle i{transform:translateX(16px)}body.dark .secure{background:#15453d;color:#84ddce}body.dark .message.success{background:#16463d;color:#93ded0}body.dark .message.error{background:#4b272b;color:#ffc0c0}
-    body.sidebar-collapsed .app{grid-template-columns:82px 1fr}body.sidebar-collapsed .sidebar{padding-left:12px;padding-right:12px}body.sidebar-collapsed .brand{justify-content:center;padding-left:0;padding-right:0}body.sidebar-collapsed .brand div,body.sidebar-collapsed .menu>span,body.sidebar-collapsed .menu a>span:not(.badge),body.sidebar-collapsed .theme-switch>span,body.sidebar-collapsed .copastur{display:none}body.sidebar-collapsed .menu a{justify-content:center;padding:0;position:relative}body.sidebar-collapsed .menu a .badge{position:absolute;top:3px;right:3px;margin:0}body.sidebar-collapsed .sidebar-toggle{transform:rotate(180deg)}body.sidebar-collapsed .theme-switch{width:100%;padding:0}body.sidebar-collapsed .toggle{margin:0 auto}
-    @media(max-width:920px){.app{grid-template-columns:82px 1fr}.sidebar{padding:24px 12px}.brand div,.menu span:not(.badge),.menu>span,.copastur{display:none}.brand{justify-content:center;padding-inline:0}.menu a{justify-content:center;padding:0}.sidebar-toggle{display:none}.workspace{grid-template-columns:1fr}.content,.topbar{padding-left:24px;padding-right:24px}.step{min-width:30px}.step div{display:none}.steps>i{width:50px}}
-    @media(max-width:620px){.app{display:block}.sidebar{height:66px;position:sticky;z-index:10;padding:10px 13px;flex-direction:row;align-items:center}.brand{border:0;padding:0}.brand img{width:42px;height:42px}.menu{display:flex;margin:0 0 0 auto}.menu a{width:41px;margin:0}.side-bottom{margin:0 0 0 6px}.theme-switch{width:41px}.theme-switch>span{display:none}.topbar{height:auto;padding:18px}.topbar h1{font-size:19px}.avatar{display:none}.content{padding:18px 14px}.steps{min-height:60px}.steps>i{width:25px;margin:0 8px}.section-title{align-items:flex-start}.secure{display:none}.upload-card{padding:12px}.dropzone{min-height:285px}.footer{padding:12px 18px}.actions{gap:12px;align-items:flex-start;flex-direction:column}}
+    :root{
+      --primary:#00a99d;
+      --primary-dark:#007d86;
+      --navy:#063e52;
+      --text:#183744;
+      --muted:#75858d;
+      --border:#dfe8e9;
+      --page:#f3f8f8;
+      --card:#fff;
+      --soft:#e8f7f4;
+      --danger:#d55353;
+      --shadow:0 12px 35px rgba(13,64,75,.08)
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family:Inter,"Segoe UI",Arial,sans-serif;
+      background:var(--page);
+      color:var(--text)
+    }
+
+    button,input{font:inherit}
+
+    .app{
+      display:grid;
+      grid-template-columns:250px 1fr;
+      min-height:100vh;
+      transition:grid-template-columns .25s ease
+    }
+
+    .sidebar{
+      position:sticky;
+      top:0;
+      height:100vh;
+      padding:26px 18px 20px;
+      background:linear-gradient(170deg,#073e53 0%,#00636d 62%,#00837d 100%);
+      color:#fff;
+      display:flex;
+      flex-direction:column;
+      box-shadow:8px 0 24px #073e531f;
+      z-index:5;
+      transition:padding .25s ease
+    }
+
+    .sidebar-toggle{
+      position:absolute;
+      top:19px;
+      right:-16px;
+      width:32px;
+      height:32px;
+      padding:0;
+      border:1px solid #b8e3df;
+      border-radius:50%;
+      background:var(--card);
+      color:var(--primary-dark);
+      box-shadow:0 5px 16px rgba(0,63,67,.18);
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      z-index:10;
+      transition:transform .25s ease,background .2s ease,color .2s ease
+    }
+
+    .sidebar-toggle:hover{background:var(--primary);color:#fff}
+
+    .sidebar-toggle svg{
+      width:16px;
+      height:16px;
+      fill:none;
+      stroke:currentColor;
+      stroke-width:2;
+      stroke-linecap:round;
+      stroke-linejoin:round
+    }
+
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      padding:0 8px 25px;
+      border-bottom:1px solid #ffffff24
+    }
+
+    .brand img{
+      width:44px;
+      height:44px;
+      object-fit:contain;
+      border-radius:12px;
+      background:#ffffff12;
+      padding:5px
+    }
+
+    .brand strong,.brand small{display:block}
+    .brand strong{font-size:16px}
+    .brand small{
+      font-size:9px;
+      letter-spacing:1.7px;
+      color:#9bdad7;
+      margin-top:5px
+    }
+
+    .menu{margin-top:27px}
+
+    .menu>span{
+      display:block;
+      font-size:9px;
+      letter-spacing:1.8px;
+      color:#80c7c8;
+      margin:0 12px 12px
+    }
+
+    .menu a{
+      width:100%;
+      height:46px;
+      border-radius:10px;
+      color:#c5dee0;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:0 14px;
+      margin:4px 0;
+      text-decoration:none;
+      font-size:13px
+    }
+
+    .menu a svg{
+      width:19px;
+      fill:none;
+      stroke:currentColor;
+      stroke-width:1.8;
+      stroke-linecap:round;
+      stroke-linejoin:round
+    }
+
+    .menu a:hover{background:#ffffff12;color:#fff}
+
+    .menu a.active{
+      background:linear-gradient(90deg,#08a99e,#00a395a8);
+      color:#fff;
+      box-shadow:0 7px 18px #003e4759
+    }
+
+    .menu .badge{
+      margin-left:auto;
+      width:19px;
+      height:19px;
+      border-radius:50%;
+      background:#ff6c6c;
+      display:grid;
+      place-items:center;
+      font-size:9px
+    }
+
+    .side-bottom{margin-top:auto}
+
+    .theme-switch{
+      border:1px solid #ffffff2b;
+      background:#003c4b8a;
+      color:#ddf1f1;
+      width:100%;
+      height:43px;
+      border-radius:10px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      cursor:pointer
+    }
+
+    .toggle{
+      width:34px;
+      height:18px;
+      border-radius:20px;
+      background:#082f3e;
+      padding:3px
+    }
+
+    .toggle i{
+      display:block;
+      width:12px;
+      height:12px;
+      border-radius:50%;
+      background:#0fc0af;
+      transition:.2s
+    }
+
+    .copastur{
+      border-top:1px solid #ffffff22;
+      margin-top:17px;
+      padding-top:18px;
+      display:flex;
+      align-items:center;
+      justify-content:center
+    }
+
+    .copastur img{
+      max-width:128px;
+      max-height:42px;
+      object-fit:contain
+    }
+
+    .main{
+      min-width:0;
+      display:flex;
+      flex-direction:column
+    }
+
+    .topbar{
+      height:108px;
+      background:var(--card);
+      border-bottom:1px solid var(--border);
+      padding:22px 40px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center
+    }
+
+    .eyebrow{
+      font-size:9px;
+      font-weight:800;
+      letter-spacing:2px;
+      color:var(--primary);
+      margin:0 0 6px
+    }
+
+    .topbar h1{
+      font-size:25px;
+      letter-spacing:-.5px;
+      margin:0
+    }
+
+    .topbar h1 span{font-weight:400}
+
+    .subtitle{
+      font-size:11px;
+      color:var(--muted);
+      margin:5px 0 0
+    }
+
+    .avatar{
+      width:39px;
+      height:39px;
+      border-radius:12px;
+      background:var(--navy);
+      color:#fff;
+      display:grid;
+      place-items:center;
+      font-size:11px;
+      font-weight:800
+    }
+
+    .content{
+      width:100%;
+      max-width:1500px;
+      margin:0 auto;
+      padding:28px 40px
+    }
+
+    .page-head{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:18px;
+      margin-bottom:20px
+    }
+
+    .page-head h2{
+      margin:0 0 5px;
+      font-size:21px
+    }
+
+    .page-head p{
+      margin:0;
+      color:var(--muted);
+      font-size:12px
+    }
+
+    .import-button{
+      border:0;
+      border-radius:9px;
+      background:var(--primary);
+      color:#fff;
+      height:40px;
+      padding:0 18px;
+      display:flex;
+      align-items:center;
+      gap:9px;
+      font-size:11px;
+      font-weight:750;
+      cursor:pointer;
+      box-shadow:0 7px 16px #03a99a36
+    }
+
+    .import-button:disabled{
+      opacity:.55;
+      cursor:not-allowed
+    }
+
+    .import-button svg{
+      width:17px;
+      height:17px;
+      fill:none;
+      stroke:currentColor;
+      stroke-width:2;
+      stroke-linecap:round;
+      stroke-linejoin:round
+    }
+
+    #fileInput{display:none}
+
+    .message{
+      display:none;
+      margin-bottom:18px;
+      padding:12px 14px;
+      border-radius:10px;
+      font-size:10px;
+      line-height:1.5
+    }
+
+    .message.show{display:block}
+    .message.success{background:#e7f7f2;color:#267867}
+    .message.error{background:#fff0f0;color:#a84343}
+    .message.info{background:#eaf4f7;color:#35697a}
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:15px;
+      margin-bottom:20px
+    }
+
+    .stat{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:18px 20px;
+      box-shadow:var(--shadow);
+      display:flex;
+      align-items:center;
+      gap:13px
+    }
+
+    .stat-icon{
+      width:39px;
+      height:39px;
+      border-radius:11px;
+      background:var(--soft);
+      color:var(--primary);
+      display:grid;
+      place-items:center;
+      font-size:16px
+    }
+
+    .stat small{
+      display:block;
+      font-size:9px;
+      text-transform:uppercase;
+      letter-spacing:1px;
+      color:var(--muted);
+      margin-bottom:4px
+    }
+
+    .stat strong{font-size:20px}
+
+    .panel{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:16px;
+      box-shadow:var(--shadow);
+      overflow:hidden
+    }
+
+    .toolbar{
+      padding:16px 18px;
+      border-bottom:1px solid var(--border);
+      display:grid;
+      grid-template-columns:170px 170px minmax(220px,1fr) auto;
+      align-items:end;
+      gap:12px
+    }
+
+    .filter-field label{
+      display:block;
+      margin-bottom:6px;
+      color:var(--muted);
+      font-size:8px;
+      font-weight:800;
+      letter-spacing:.6px;
+      text-transform:uppercase
+    }
+
+    .filter-field input{
+      width:100%;
+      height:38px;
+      border:1px solid var(--border);
+      border-radius:9px;
+      background:var(--page);
+      color:var(--text);
+      padding:0 11px;
+      outline:none;
+      font-size:10px
+    }
+
+    .filter-field input:focus{border-color:var(--primary)}
+
+    .clear-button{
+      height:38px;
+      border:1px solid var(--border);
+      border-radius:9px;
+      background:var(--card);
+      color:var(--primary-dark);
+      padding:0 14px;
+      font-size:10px;
+      font-weight:700;
+      cursor:pointer
+    }
+
+    .counter{
+      padding:10px 18px;
+      border-bottom:1px solid var(--border);
+      color:var(--muted);
+      font-size:9px
+    }
+
+    .table-wrap{
+      overflow:auto;
+      min-height:320px;
+      max-height:calc(100vh - 470px)
+    }
+
+    table{
+      border-collapse:collapse;
+      width:100%;
+      font-size:10px;
+      white-space:nowrap
+    }
+
+    th,td{
+      padding:11px 13px;
+      border-bottom:1px solid var(--border);
+      text-align:left
+    }
+
+    th{
+      position:sticky;
+      top:0;
+      z-index:2;
+      background:var(--soft);
+      color:var(--primary-dark);
+      font-size:9px;
+      text-transform:uppercase;
+      letter-spacing:.4px
+    }
+
+    tbody tr:hover{background:color-mix(in srgb,var(--soft) 45%,transparent)}
+
+    .type{
+      display:inline-flex;
+      padding:4px 8px;
+      border-radius:20px;
+      font-size:9px;
+      font-weight:750
+    }
+
+    .type.credito{background:#e3f5ef;color:#247b66}
+    .type.debito{background:#ffeded;color:#aa4343}
+    .amount.credito{color:#247b66;font-weight:800}
+    .amount.debito{color:#aa4343;font-weight:800}
+
+    .empty,.loading{
+      padding:70px 20px;
+      text-align:center;
+      color:var(--muted);
+      font-size:12px
+    }
+
+    .loading:before{
+      content:"";
+      display:block;
+      width:28px;
+      height:28px;
+      margin:0 auto 13px;
+      border:3px solid var(--border);
+      border-top-color:var(--primary);
+      border-radius:50%;
+      animation:spin .8s linear infinite
+    }
+
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    .pagination{
+      min-height:62px;
+      padding:14px 18px;
+      border-top:1px solid var(--border);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:15px
+    }
+
+    .pagination-info{
+      color:var(--muted);
+      font-size:9px
+    }
+
+    .pagination-controls{
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap
+    }
+
+    .page-btn{
+      min-width:32px;
+      height:32px;
+      padding:0 9px;
+      border:1px solid var(--border);
+      border-radius:8px;
+      background:var(--card);
+      color:var(--text);
+      display:grid;
+      place-items:center;
+      font-size:10px;
+      font-weight:750;
+      cursor:pointer
+    }
+
+    .page-btn:hover:not(:disabled){
+      border-color:var(--primary);
+      background:var(--soft);
+      color:var(--primary-dark)
+    }
+
+    .page-btn.active{
+      background:var(--primary);
+      border-color:var(--primary);
+      color:#fff
+    }
+
+    .page-btn:disabled{
+      opacity:.4;
+      cursor:not-allowed
+    }
+
+    .footer{
+      margin-top:auto;
+      padding:13px 40px;
+      border-top:1px solid var(--border);
+      display:flex;
+      justify-content:space-between;
+      color:var(--muted);
+      font-size:8px
+    }
+
+    body.dark{
+      --text:#eff9f9;
+      --muted:#aec3c6;
+      --border:#294d54;
+      --page:#071c22;
+      --card:#102e35;
+      --soft:#153e3e;
+      --shadow:0 14px 35px rgba(0,0,0,.25)
+    }
+
+    body.dark .toggle i{transform:translateX(16px)}
+    body.dark .message.success{background:#16463d;color:#93ded0}
+    body.dark .message.error{background:#4b272b;color:#ffc0c0}
+    body.dark .message.info{background:#163c48;color:#a9d8e4}
+
+    body.sidebar-collapsed .app{grid-template-columns:82px 1fr}
+    body.sidebar-collapsed .sidebar{padding-left:12px;padding-right:12px}
+    body.sidebar-collapsed .brand{justify-content:center;padding-left:0;padding-right:0}
+    body.sidebar-collapsed .brand div,
+    body.sidebar-collapsed .menu>span,
+    body.sidebar-collapsed .menu a>span:not(.badge),
+    body.sidebar-collapsed .theme-switch>span,
+    body.sidebar-collapsed .copastur{display:none}
+    body.sidebar-collapsed .menu a{justify-content:center;padding:0;position:relative}
+    body.sidebar-collapsed .menu a .badge{position:absolute;top:3px;right:3px;margin:0}
+    body.sidebar-collapsed .sidebar-toggle{transform:rotate(180deg)}
+    body.sidebar-collapsed .theme-switch{width:100%;padding:0}
+    body.sidebar-collapsed .toggle{margin:0 auto}
+
+    @media(max-width:1000px){
+      .app{grid-template-columns:82px 1fr}
+      .sidebar{padding:24px 12px}
+      .brand div,.menu span:not(.badge),.menu>span,.copastur{display:none}
+      .brand{justify-content:center;padding-inline:0}
+      .menu a{justify-content:center;padding:0}
+      .sidebar-toggle{display:none}
+      .content,.topbar{padding-left:24px;padding-right:24px}
+      .stats{grid-template-columns:1fr}
+      .toolbar{grid-template-columns:1fr 1fr}
+      .filter-field.description{grid-column:1/-1}
+      .clear-button{width:max-content}
+      .table-wrap{max-height:none}
+    }
+
+    @media(max-width:650px){
+      .app{display:block}
+      .sidebar{
+        height:66px;
+        position:sticky;
+        z-index:10;
+        padding:10px 13px;
+        flex-direction:row;
+        align-items:center
+      }
+
+      .brand{border:0;padding:0}
+      .brand img{width:42px;height:42px}
+      .menu{display:flex;margin:0 0 0 auto}
+      .menu a{width:41px;margin:0}
+      .side-bottom{margin:0 0 0 6px}
+      .theme-switch{width:41px}
+      .theme-switch>span{display:none}
+      .topbar{height:auto;padding:18px}
+      .topbar h1{font-size:19px}
+      .avatar{display:none}
+      .content{padding:18px 14px}
+      .page-head{align-items:flex-start}
+      .stats{gap:9px}
+      .toolbar{grid-template-columns:1fr}
+      .filter-field.description{grid-column:auto}
+      .clear-button{width:100%}
+      .pagination{align-items:flex-start;flex-direction:column}
+      .footer{padding:12px 18px}
+    }
   </style>
 </head>
 <body>
   <div class="app">
     <aside class="sidebar">
-      <button id="sidebarToggle" class="sidebar-toggle" type="button" aria-label="Ocultar menu lateral" title="Ocultar menu lateral"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"></path></svg></button>
-      <div class="brand"><img src="pix.png" alt="Logo PIX"><div><strong>Conciliação</strong><small>PIX • COPASTUR</small></div></div>
-      <nav class="menu" aria-label="Menu principal"><span>OPERAÇÕES</span>
-        <a href="./index.html"><svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 15v4h14v-4"/></svg><span>Importar Arquivos</span></a>
-        <a href="./conciliacao.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="m8.5 12 2.3 2.3 4.8-5"/></svg><span>Conciliação</span></a>
-        <a href="./extratos.html" class="active"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7zM14 3v5h5M10 12h5m-5 4h5"/></svg><span>Extratos</span></a>
-        <a href="#"><svg viewBox="0 0 24 24"><path d="M9 7 5 11l4 4M5 11h8a5 5 0 0 1 5 5v2"/></svg><span>Estornos</span></a>
-        <a href="#"><svg viewBox="0 0 24 24"><path d="M12 3 3.5 19h17zM12 9v4m0 3h.01"/></svg><span>Pendências</span><b class="badge">3</b></a>
-      </nav>
-      <div class="side-bottom"><button id="themeButton" class="theme-switch" aria-label="Alternar modo de alto contraste"><span>☼</span><span class="toggle"><i></i></span><span>◐</span></button><div class="copastur"><img src="copastur.png" alt="Copastur Viagens e Turismo"></div></div>
-    </aside>
-    <main class="main">
-      <header class="topbar"><div><p class="eyebrow">SMARTOPERATIONS</p><h1>Conciliação PIX <span>— Extratos</span></h1><p class="subtitle">Importação e tratamento dos movimentos da conta PIX</p></div><div class="avatar">RL</div></header>
-      <section class="content">
-        <div class="steps"><div class="step current"><b>1</b><div>Importar extrato<small>Selecione o arquivo Stark</small></div></div><i></i><div class="step"><b>2</b><div>Transformar dados<small>Valor, data, descrição e C/D</small></div></div><i></i><div class="step"><b>3</b><div>Enviar<small>Salvar no Google Sheets</small></div></div></div>
-        <div class="section-title"><div><h2>Importar extrato PIX</h2><p>Carregue o arquivo exportado da carteira PIX para preparar os lançamentos.</p></div><span class="secure">✓ Processamento local e seguro</span></div>
-        <div class="workspace">
-          <div class="upload-card"><div id="dropzone" class="dropzone"><input id="fileInput" type="file" accept=".xlsx,.xls,.csv"><div class="upload-icon"><svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 15v4h14v-4"/></svg></div><h3 id="fileTitle">Arraste o extrato PIX aqui</h3><p id="fileText">ou clique para selecionar o arquivo</p><button class="select-btn" type="button">Selecionar extrato</button><small>Formatos aceitos: XLSX, XLS e CSV • Máximo 10 MB</small></div><div id="message" class="message"></div></div>
-          <aside class="columns-card"><div class="columns-head"><span class="check">✓</span><div><h3>Tratamento das colunas</h3><p>Regras aplicadas automaticamente</p></div></div><ul>
-            <li><b>1</b><div><strong>Valor</strong><small>Origem: amount</small></div><i>✓</i></li>
-            <li><b>2</b><div><strong>Data</strong><small>Origem: created</small></div><i>✓</i></li>
-            <li><b>3</b><div><strong>Descrição</strong><small>name; se vazio, usa description</small></div><i>✓</i></li>
-            <li><b>4</b><div><strong>C/D</strong><small>Crédito: vazio, estorno ou devolução</small></div><i>✓</i></li>
-          </ul></aside>
+      <button id="sidebarToggle" class="sidebar-toggle" type="button" aria-label="Ocultar menu lateral" title="Ocultar menu lateral">
+        <svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"></path></svg>
+      </button>
+
+      <div class="brand">
+        <img src="pix.png" alt="Logo PIX">
+        <div>
+          <strong>Conciliação</strong>
+          <small>PIX • COPASTUR</small>
         </div>
-        <section id="preview" class="preview-card"><div class="preview-head"><h3>Prévia dos lançamentos tratados</h3><span id="rowCount"></span></div><div class="table-wrap"><table><thead><tr><th>Valor</th><th>Data</th><th>Descrição</th><th>C/D</th></tr></thead><tbody id="tableBody"></tbody></table></div><div class="actions"><p>Destino sugerido: aba Extratos PIX no Google Sheets.</p><button id="sendButton" class="send-btn" disabled>Enviar ao Google Sheets →</button></div></section>
+      </div>
+
+      <nav class="menu" aria-label="Menu principal">
+        <span>OPERAÇÕES</span>
+
+        <a href="./index.html">
+          <svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 15v4h14v-4"/></svg>
+          <span>Importar Arquivos</span>
+        </a>
+
+        <a href="./conciliacao.html">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="m8.5 12 2.3 2.3 4.8-5"/></svg>
+          <span>Conciliação</span>
+        </a>
+
+        <a href="./extratos.html" class="active">
+          <svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7zM14 3v5h5M10 12h5m-5 4h5"/></svg>
+          <span>Extratos</span>
+        </a>
+
+        <a href="#">
+          <svg viewBox="0 0 24 24"><path d="M9 7 5 11l4 4M5 11h8a5 5 0 0 1 5 5v2"/></svg>
+          <span>Estornos</span>
+        </a>
+
+        <a href="#">
+          <svg viewBox="0 0 24 24"><path d="M12 3 3.5 19h17zM12 9v4m0 3h.01"/></svg>
+          <span>Pendências</span>
+          <b class="badge">3</b>
+        </a>
+      </nav>
+
+      <div class="side-bottom">
+        <button id="themeButton" class="theme-switch" aria-label="Alternar modo de alto contraste">
+          <span>☼</span>
+          <span class="toggle"><i></i></span>
+          <span>◐</span>
+        </button>
+
+        <div class="copastur">
+          <img src="copastur.png" alt="Copastur Viagens e Turismo">
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">SMARTOPERATIONS</p>
+          <h1>Conciliação PIX <span>— Extratos</span></h1>
+          <p class="subtitle">Importação e consulta dos movimentos da conta PIX</p>
+        </div>
+        <div class="avatar">RL</div>
+      </header>
+
+      <section class="content">
+        <div class="page-head">
+          <div>
+            <h2>Extratos PIX</h2>
+            <p>Importe um arquivo e consulte os lançamentos já salvos no Google Sheets.</p>
+          </div>
+
+          <div>
+            <input id="fileInput" type="file" accept=".xlsx,.xls,.csv">
+            <button id="importButton" class="import-button" type="button">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 15v4h14v-4"/>
+              </svg>
+              Importar extrato
+            </button>
+          </div>
+        </div>
+
+        <div id="message" class="message"></div>
+
+        <div class="stats">
+          <article class="stat">
+            <span class="stat-icon">▤</span>
+            <div>
+              <small>Total de lançamentos</small>
+              <strong id="totalRecords">—</strong>
+            </div>
+          </article>
+
+          <article class="stat">
+            <span class="stat-icon">＋</span>
+            <div>
+              <small>Total de créditos</small>
+              <strong id="totalCredits">—</strong>
+            </div>
+          </article>
+
+          <article class="stat">
+            <span class="stat-icon">−</span>
+            <div>
+              <small>Total de débitos</small>
+              <strong id="totalDebits">—</strong>
+            </div>
+          </article>
+        </div>
+
+        <section class="panel">
+          <div class="toolbar">
+            <div class="filter-field">
+              <label for="dateFilter">Data</label>
+              <input id="dateFilter" type="date">
+            </div>
+
+            <div class="filter-field">
+              <label for="valueFilter">Valor</label>
+              <input id="valueFilter" type="search" inputmode="decimal" placeholder="Ex.: 150,00">
+            </div>
+
+            <div class="filter-field description">
+              <label for="descriptionFilter">Descrição</label>
+              <input id="descriptionFilter" type="search" placeholder="Buscar estabelecimento ou descrição">
+            </div>
+
+            <button id="clearFilters" class="clear-button" type="button">
+              Limpar filtros
+            </button>
+          </div>
+
+          <div id="counter" class="counter"></div>
+
+          <div id="tableContainer" class="table-wrap">
+            <div class="loading">Carregando extratos do Google Sheets...</div>
+          </div>
+
+          <div id="pagination" class="pagination"></div>
+        </section>
       </section>
-      <footer class="footer"><span>Smartoperations • Conciliação PIX</span><span>v2.1.0</span></footer>
+
+      <footer class="footer">
+        <span>Smartoperations • Conciliação PIX</span>
+        <span>v2.2.0</span>
+      </footer>
     </main>
   </div>
+
   <script>
     const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbz9yjkk4szt3_qU7YD_I2lsCdy15AjZjoL9o2Jkudy8KB_2EVozqQX1izImvjUE-aDmrA/exec";
     const REQUIRED_SOURCE_COLUMNS=["amount","created","description","name"];
-    const dropzone=document.getElementById("dropzone"),fileInput=document.getElementById("fileInput"),message=document.getElementById("message"),preview=document.getElementById("preview"),sendButton=document.getElementById("sendButton"),sidebarToggle=document.getElementById("sidebarToggle");
-    if(localStorage.getItem("pix-theme")==="dark")document.body.classList.add("dark");
-    if(localStorage.getItem("pix-sidebar")==="collapsed"){document.body.classList.add("sidebar-collapsed");sidebarToggle.title="Exibir menu lateral";sidebarToggle.setAttribute("aria-label","Exibir menu lateral")}
-    document.getElementById("themeButton").onclick=()=>{document.body.classList.toggle("dark");localStorage.setItem("pix-theme",document.body.classList.contains("dark")?"dark":"light")};
-    sidebarToggle.onclick=()=>{const collapsed=document.body.classList.toggle("sidebar-collapsed");localStorage.setItem("pix-sidebar",collapsed?"collapsed":"expanded");sidebarToggle.title=collapsed?"Exibir menu lateral":"Ocultar menu lateral";sidebarToggle.setAttribute("aria-label",sidebarToggle.title)};
-    dropzone.addEventListener("click",event=>{if(!event.target.closest("input"))fileInput.click()});
-    ["dragenter","dragover"].forEach(type=>dropzone.addEventListener(type,event=>{event.preventDefault();dropzone.classList.add("drag")}));
-    ["dragleave","drop"].forEach(type=>dropzone.addEventListener(type,event=>{event.preventDefault();dropzone.classList.remove("drag")}));
-    dropzone.addEventListener("drop",event=>processFile(event.dataTransfer.files[0]));fileInput.addEventListener("change",()=>processFile(fileInput.files[0]));
-    function normalize(value){return String(value??"").trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase()}
-    function showMessage(text,type){message.textContent=text;message.className=`message show ${type}`}
-    function decodeHtml(value){const area=document.createElement("textarea");area.innerHTML=String(value??"");return area.value}
-    function determineType(name,description){const cleanName=String(name??"").trim();const text=normalize(`${cleanName} ${description??""}`);return !cleanName||text.includes("estorno")||text.includes("devolucao")?"Crédito":"Débito"}
-    function formatDate(value){const raw=String(value??"").trim();if(!raw)return "";const date=new Date(raw);if(Number.isNaN(date.getTime()))return raw;return new Intl.DateTimeFormat("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}).format(date)}
-    function parseAmount(value){const raw=String(value??"").trim().replace(/\s/g,"");const normalized=raw.includes(",")?raw.replace(/\./g,"").replace(",","."):raw;const number=Number(normalized);return Number.isFinite(number)?number:0}
-    function formatCurrency(value){return Number(value).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
-    function processFile(file){preview.classList.remove("show");sendButton.disabled=true;window.statementRows=[];window.statementSourceFile="";if(!file)return;if(file.size>10*1024*1024)return showMessage("O arquivo ultrapassa o limite de 10 MB.","error");if(!/\.(xlsx|xls|csv)$/i.test(file.name))return showMessage("Formato inválido. Envie um arquivo XLSX, XLS ou CSV.","error");document.getElementById("fileTitle").textContent=file.name;document.getElementById("fileText").textContent=`${(file.size/1024).toFixed(1)} KB • lendo dados...`;const reader=new FileReader();reader.onload=event=>{try{const workbook=XLSX.read(event.target.result,{type:"array",cellDates:false});const sheet=workbook.Sheets[workbook.SheetNames[0]];const matrix=XLSX.utils.sheet_to_json(sheet,{header:1,defval:"",raw:false});if(!matrix.length)throw new Error("A primeira aba está vazia.");const headerIndex=matrix.slice(0,30).findIndex(row=>{const headers=row.map(normalize);return REQUIRED_SOURCE_COLUMNS.every(column=>headers.includes(column))});if(headerIndex<0)throw new Error("Não foram encontradas as colunas amount, created, description e name.");const headers=matrix[headerIndex].map(normalize);const map={};headers.forEach((header,index)=>map[header]=index);const sourceRows=matrix.slice(headerIndex+1).filter(row=>REQUIRED_SOURCE_COLUMNS.some(column=>String(row[map[column]]??"").trim()!==""));const transformed=sourceRows.map(row=>{const amount=parseAmount(row[map.amount]);const name=String(row[map.name]??"").trim();const description=decodeHtml(row[map.description]);const type=determineType(name,description);return {"Valor":amount,"Data":formatDate(row[map.created]),"Descrição":name||description,"C/D":type}});if(!transformed.length)throw new Error("Nenhum lançamento válido foi encontrado.");window.statementRows=transformed;window.statementSourceFile=file.name;renderPreview(transformed);sendButton.disabled=false;document.getElementById("fileText").textContent=`${transformed.length} lançamentos válidos encontrados`;const credits=transformed.filter(row=>row["C/D"]==="Crédito").length;const debits=transformed.length-credits;showMessage(`Extrato validado: ${transformed.length} lançamentos, sendo ${credits} créditos e ${debits} débitos.`,"success")}catch(error){showMessage(error.message||"Não foi possível ler o extrato.","error")}};reader.readAsArrayBuffer(file)}
-    function renderPreview(rows){document.getElementById("rowCount").textContent=`${rows.length} lançamentos • mostrando até 10`;document.getElementById("tableBody").innerHTML=rows.slice(0,10).map(row=>{const cls=row["C/D"]==="Crédito"?"credito":"debito";return `<tr><td class="amount ${cls}">${formatCurrency(row.Valor)}</td><td>${escapeHtml(row.Data)}</td><td title="${escapeAttr(row.Descrição)}">${escapeHtml(row.Descrição)}</td><td><span class="type ${cls}">${row["C/D"]}</span></td></tr>`}).join("");preview.classList.add("show")}
-    function escapeHtml(value){const div=document.createElement("div");div.textContent=String(value??"");return div.innerHTML}function escapeAttr(value){return escapeHtml(value).replace(/"/g,"&quot;")}
-    sendButton.addEventListener("click",async()=>{if(!Array.isArray(window.statementRows)||!window.statementRows.length)return showMessage("Selecione e valide um extrato antes de enviar.","error");const original=sendButton.textContent;sendButton.disabled=true;sendButton.textContent="Enviando lançamentos...";try{const payload=JSON.stringify({action:"importExtrato",sheetName:"Extratos PIX",sourceFile:window.statementSourceFile,rows:window.statementRows});await fetch(APPS_SCRIPT_URL,{method:"POST",mode:"no-cors",body:new URLSearchParams({payload})});showMessage(`Solicitação de ${window.statementRows.length} lançamentos enviada ao Google Sheets.`,"success");sendButton.textContent="Solicitação enviada ✓"}catch(error){console.error(error);showMessage("Não foi possível enviar os lançamentos. Verifique o Apps Script e tente novamente.","error");sendButton.disabled=false;sendButton.textContent=original}});
+    const RECORDS_PER_PAGE=10;
+
+    let records=[];
+    let filtered=[];
+    let currentPage=1;
+
+    const fileInput=document.getElementById("fileInput");
+    const importButton=document.getElementById("importButton");
+    const message=document.getElementById("message");
+    const tableContainer=document.getElementById("tableContainer");
+    const pagination=document.getElementById("pagination");
+    const dateFilter=document.getElementById("dateFilter");
+    const valueFilter=document.getElementById("valueFilter");
+    const descriptionFilter=document.getElementById("descriptionFilter");
+    const sidebarToggle=document.getElementById("sidebarToggle");
+
+    if(localStorage.getItem("pix-theme")==="dark"){
+      document.body.classList.add("dark");
+    }
+
+    if(localStorage.getItem("pix-sidebar")==="collapsed"){
+      document.body.classList.add("sidebar-collapsed");
+      sidebarToggle.title="Exibir menu lateral";
+      sidebarToggle.setAttribute("aria-label","Exibir menu lateral");
+    }
+
+    document.getElementById("themeButton").onclick=()=>{
+      document.body.classList.toggle("dark");
+      localStorage.setItem(
+        "pix-theme",
+        document.body.classList.contains("dark")?"dark":"light"
+      );
+    };
+
+    sidebarToggle.onclick=()=>{
+      const collapsed=document.body.classList.toggle("sidebar-collapsed");
+      localStorage.setItem("pix-sidebar",collapsed?"collapsed":"expanded");
+      sidebarToggle.title=collapsed?"Exibir menu lateral":"Ocultar menu lateral";
+      sidebarToggle.setAttribute("aria-label",sidebarToggle.title);
+    };
+
+    importButton.addEventListener("click",()=>{
+      fileInput.value="";
+      fileInput.click();
+    });
+
+    fileInput.addEventListener("change",()=>{
+      processFile(fileInput.files[0]);
+    });
+
+    function loadExtratos(){
+      tableContainer.innerHTML=
+        '<div class="loading">Carregando extratos do Google Sheets...</div>';
+
+      pagination.innerHTML="";
+
+      const callback=`pixExtratos_${Date.now()}`;
+      const script=document.createElement("script");
+
+      const timeout=setTimeout(()=>{
+        cleanup();
+        showLoadError(
+          "A consulta demorou demais. Confirme se o Apps Script atualizado foi publicado."
+        );
+      },15000);
+
+      function cleanup(){
+        clearTimeout(timeout);
+        delete window[callback];
+        script.remove();
+      }
+
+      window[callback]=data=>{
+        cleanup();
+
+        if(!data||!data.success){
+          return showLoadError(
+            data&&data.message
+              ? data.message
+              : "Não foi possível consultar os extratos."
+          );
+        }
+
+        records=Array.isArray(data.records)?data.records:[];
+        currentPage=1;
+        applyFilters();
+        updateStats();
+      };
+
+      script.onerror=()=>{
+        cleanup();
+        showLoadError(
+          "Falha ao acessar o Apps Script. Verifique a implantação e o acesso público."
+        );
+      };
+
+      script.src=
+        `${APPS_SCRIPT_URL}?action=listExtratos&callback=${callback}&_=${Date.now()}`;
+
+      document.body.appendChild(script);
+    }
+
+    function showLoadError(text){
+      tableContainer.innerHTML=`
+        <div class="empty">
+          ${escapeHtml(text)}
+          <br><br>
+          <button class="clear-button" onclick="loadExtratos()">
+            Tentar novamente
+          </button>
+        </div>
+      `;
+    }
+
+    function processFile(file){
+      if(!file)return;
+
+      if(file.size>10*1024*1024){
+        return showMessage(
+          "O arquivo ultrapassa o limite de 10 MB.",
+          "error"
+        );
+      }
+
+      if(!/\.(xlsx|xls|csv)$/i.test(file.name)){
+        return showMessage(
+          "Formato inválido. Envie um arquivo XLSX, XLS ou CSV.",
+          "error"
+        );
+      }
+
+      importButton.disabled=true;
+      importButton.textContent="Lendo arquivo...";
+      showMessage("Processando o extrato selecionado...","info");
+
+      const reader=new FileReader();
+
+      reader.onload=async event=>{
+        try{
+          const workbook=XLSX.read(
+            event.target.result,
+            {
+              type:"array",
+              cellDates:false
+            }
+          );
+
+          const sheet=workbook.Sheets[workbook.SheetNames[0]];
+
+          const matrix=XLSX.utils.sheet_to_json(
+            sheet,
+            {
+              header:1,
+              defval:"",
+              raw:false
+            }
+          );
+
+          if(!matrix.length){
+            throw new Error("A primeira aba está vazia.");
+          }
+
+          const headerIndex=matrix
+            .slice(0,30)
+            .findIndex(row=>{
+              const headers=row.map(normalize);
+              return REQUIRED_SOURCE_COLUMNS.every(
+                column=>headers.includes(column)
+              );
+            });
+
+          if(headerIndex<0){
+            throw new Error(
+              "Não foram encontradas as colunas amount, created, description e name."
+            );
+          }
+
+          const headers=matrix[headerIndex].map(normalize);
+          const map={};
+
+          headers.forEach((header,index)=>{
+            map[header]=index;
+          });
+
+          const sourceRows=matrix
+            .slice(headerIndex+1)
+            .filter(row=>
+              REQUIRED_SOURCE_COLUMNS.some(
+                column=>String(row[map[column]]??"").trim()!==""
+              )
+            );
+
+          const transformed=sourceRows.map(row=>{
+            const amount=parseAmount(row[map.amount]);
+            const name=String(row[map.name]??"").trim();
+            const description=decodeHtml(row[map.description]);
+            const type=determineType(name,description);
+
+            return {
+              "Valor":amount,
+              "Data":formatDate(row[map.created]),
+              "Descrição":name||description,
+              "C/D":type
+            };
+          });
+
+          if(!transformed.length){
+            throw new Error(
+              "Nenhum lançamento válido foi encontrado."
+            );
+          }
+
+          importButton.textContent="Enviando ao Google Sheets...";
+
+          const payload=JSON.stringify({
+            action:"importExtrato",
+            sourceFile:file.name,
+            rows:transformed
+          });
+
+          await fetch(
+            APPS_SCRIPT_URL,
+            {
+              method:"POST",
+              mode:"no-cors",
+              body:new URLSearchParams({payload})
+            }
+          );
+
+          showMessage(
+            `${transformed.length} lançamentos enviados. Atualizando a listagem...`,
+            "success"
+          );
+
+          setTimeout(loadExtratos,1800);
+
+        }catch(error){
+          console.error(error);
+          showMessage(
+            error.message||"Não foi possível importar o extrato.",
+            "error"
+          );
+        }finally{
+          importButton.disabled=false;
+          importButton.innerHTML=`
+            <svg viewBox="0 0 24 24">
+              <path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 15v4h14v-4"/>
+            </svg>
+            Importar extrato
+          `;
+        }
+      };
+
+      reader.onerror=()=>{
+        importButton.disabled=false;
+        importButton.textContent="Importar extrato";
+        showMessage("Não foi possível ler o arquivo.","error");
+      };
+
+      reader.readAsArrayBuffer(file);
+    }
+
+    function applyFilters(){
+      const selectedDate=dateFilter.value;
+      const selectedValue=parseFilterNumber(valueFilter.value);
+      const descriptionQuery=normalize(descriptionFilter.value);
+
+      filtered=records.filter(record=>{
+        const recordDate=toIsoDate(record.Data);
+        const recordValue=parseAmount(record.Valor);
+        const recordDescription=normalize(record["Descrição"]);
+
+        const dateMatches=
+          !selectedDate||
+          recordDate===selectedDate;
+
+        const valueMatches=
+          selectedValue===null||
+          Math.abs(recordValue-selectedValue)<0.005;
+
+        const descriptionMatches=
+          !descriptionQuery||
+          recordDescription.includes(descriptionQuery);
+
+        return dateMatches&&valueMatches&&descriptionMatches;
+      });
+
+      currentPage=1;
+      renderTable();
+      renderPagination();
+
+      document.getElementById("counter").textContent=
+        `${filtered.length} de ${records.length} lançamentos`;
+    }
+
+    function renderTable(){
+      if(!filtered.length){
+        tableContainer.innerHTML=
+          '<div class="empty">Nenhum lançamento encontrado.</div>';
+        return;
+      }
+
+      const startIndex=(currentPage-1)*RECORDS_PER_PAGE;
+      const pageRows=filtered.slice(
+        startIndex,
+        startIndex+RECORDS_PER_PAGE
+      );
+
+      tableContainer.innerHTML=`
+        <table>
+          <thead>
+            <tr>
+              <th>Valor</th>
+              <th>Data</th>
+              <th>Descrição</th>
+              <th>C/D</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            ${pageRows.map(row=>{
+              const type=
+                normalize(row["C/D"])==="credito"
+                  ? "credito"
+                  : "debito";
+
+              return `
+                <tr>
+                  <td class="amount ${type}">
+                    ${formatCurrency(parseAmount(row.Valor))}
+                  </td>
+                  <td>${escapeHtml(row.Data)}</td>
+                  <td title="${escapeAttr(row["Descrição"])}">
+                    ${escapeHtml(row["Descrição"])}
+                  </td>
+                  <td>
+                    <span class="type ${type}">
+                      ${escapeHtml(row["C/D"])}
+                    </span>
+                  </td>
+                </tr>
+              `;
+            }).join("")}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function renderPagination(){
+      const totalPages=Math.ceil(filtered.length/RECORDS_PER_PAGE);
+
+      if(!filtered.length){
+        pagination.innerHTML="";
+        return;
+      }
+
+      const start=(currentPage-1)*RECORDS_PER_PAGE+1;
+      const end=Math.min(
+        currentPage*RECORDS_PER_PAGE,
+        filtered.length
+      );
+
+      pagination.innerHTML=`
+        <span class="pagination-info">
+          Exibindo ${start}–${end} de ${filtered.length}
+        </span>
+
+        <div class="pagination-controls">
+          <button
+            class="page-btn"
+            data-page="previous"
+            ${currentPage===1?"disabled":""}
+          >
+            ‹
+          </button>
+
+          ${buildPageButtons(totalPages)}
+
+          <button
+            class="page-btn"
+            data-page="next"
+            ${currentPage===totalPages?"disabled":""}
+          >
+            ›
+          </button>
+        </div>
+      `;
+    }
+
+    function buildPageButtons(totalPages){
+      const buttons=[];
+      const maxVisible=5;
+
+      let start=Math.max(
+        1,
+        currentPage-Math.floor(maxVisible/2)
+      );
+
+      let end=Math.min(
+        totalPages,
+        start+maxVisible-1
+      );
+
+      if(end-start+1<maxVisible){
+        start=Math.max(1,end-maxVisible+1);
+      }
+
+      for(let page=start;page<=end;page++){
+        buttons.push(`
+          <button
+            class="page-btn ${page===currentPage?"active":""}"
+            data-page="${page}"
+          >
+            ${page}
+          </button>
+        `);
+      }
+
+      return buttons.join("");
+    }
+
+    function updateStats(){
+      const credits=records.filter(
+        record=>normalize(record["C/D"])==="credito"
+      );
+
+      const debits=records.filter(
+        record=>normalize(record["C/D"])==="debito"
+      );
+
+      const creditTotal=credits.reduce(
+        (sum,record)=>sum+Math.abs(parseAmount(record.Valor)),
+        0
+      );
+
+      const debitTotal=debits.reduce(
+        (sum,record)=>sum+Math.abs(parseAmount(record.Valor)),
+        0
+      );
+
+      document.getElementById("totalRecords").textContent=
+        records.length.toLocaleString("pt-BR");
+
+      document.getElementById("totalCredits").textContent=
+        formatCurrency(creditTotal);
+
+      document.getElementById("totalDebits").textContent=
+        formatCurrency(debitTotal);
+    }
+
+    function showMessage(text,type){
+      message.textContent=text;
+      message.className=`message show ${type}`;
+    }
+
+    function decodeHtml(value){
+      const area=document.createElement("textarea");
+      area.innerHTML=String(value??"");
+      return area.value;
+    }
+
+    function determineType(name,description){
+      const cleanName=String(name??"").trim();
+      const text=normalize(`${cleanName} ${description??""}`);
+
+      return (
+        !cleanName||
+        text.includes("estorno")||
+        text.includes("devolucao")
+      )
+        ? "Crédito"
+        : "Débito";
+    }
+
+    function formatDate(value){
+      const raw=String(value??"").trim();
+
+      if(!raw)return "";
+
+      const date=new Date(raw);
+
+      if(Number.isNaN(date.getTime())){
+        return raw;
+      }
+
+      return new Intl.DateTimeFormat(
+        "pt-BR",
+        {
+          day:"2-digit",
+          month:"2-digit",
+          year:"numeric",
+          hour:"2-digit",
+          minute:"2-digit"
+        }
+      ).format(date);
+    }
+
+    function toIsoDate(value){
+      const text=String(value??"").trim();
+
+      const br=text.match(
+        /^(\d{1,2})\/(\d{1,2})\/(\d{4})/
+      );
+
+      if(br){
+        return `${br[3]}-${String(br[2]).padStart(2,"0")}-${String(br[1]).padStart(2,"0")}`;
+      }
+
+      const date=new Date(text);
+
+      if(Number.isNaN(date.getTime())){
+        return "";
+      }
+
+      return [
+        date.getFullYear(),
+        String(date.getMonth()+1).padStart(2,"0"),
+        String(date.getDate()).padStart(2,"0")
+      ].join("-");
+    }
+
+    function parseAmount(value){
+      const raw=String(value??"")
+        .trim()
+        .replace(/R\$/gi,"")
+        .replace(/\s/g,"");
+
+      let normalized=raw;
+
+      if(raw.includes(",")&&raw.includes(".")){
+        normalized=raw.replace(/\./g,"").replace(",",".");
+      }else if(raw.includes(",")){
+        normalized=raw.replace(",",".");
+      }
+
+      const number=Number(normalized);
+      return Number.isFinite(number)?number:0;
+    }
+
+    function parseFilterNumber(value){
+      const text=String(value??"").trim();
+
+      if(!text){
+        return null;
+      }
+
+      return parseAmount(text);
+    }
+
+    function formatCurrency(value){
+      return Number(value).toLocaleString(
+        "pt-BR",
+        {
+          style:"currency",
+          currency:"BRL"
+        }
+      );
+    }
+
+    function normalize(value){
+      return String(value??"")
+        .trim()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g,"")
+        .toLowerCase();
+    }
+
+    function escapeHtml(value){
+      const div=document.createElement("div");
+      div.textContent=String(value??"");
+      return div.innerHTML;
+    }
+
+    function escapeAttr(value){
+      return escapeHtml(value).replace(/"/g,"&quot;");
+    }
+
+    [dateFilter,valueFilter,descriptionFilter].forEach(
+      input=>input.addEventListener("input",applyFilters)
+    );
+
+    document.getElementById("clearFilters").onclick=()=>{
+      dateFilter.value="";
+      valueFilter.value="";
+      descriptionFilter.value="";
+      applyFilters();
+    };
+
+    pagination.addEventListener("click",event=>{
+      const button=event.target.closest("[data-page]");
+
+      if(!button||button.disabled)return;
+
+      const page=button.dataset.page;
+      const totalPages=Math.ceil(filtered.length/RECORDS_PER_PAGE);
+
+      if(page==="previous"){
+        currentPage=Math.max(1,currentPage-1);
+      }else if(page==="next"){
+        currentPage=Math.min(totalPages,currentPage+1);
+      }else{
+        currentPage=Number(page);
+      }
+
+      renderTable();
+      renderPagination();
+
+      tableContainer.scrollTo({
+        top:0,
+        behavior:"smooth"
+      });
+    });
+
+    loadExtratos();
   </script>
 </body>
 </html>
