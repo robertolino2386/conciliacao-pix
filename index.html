@@ -40,7 +40,7 @@
         </div>
 
         <section id="pixView" class="import-view active">
-          <div class="single-workspace">
+          <div class="workspace">
             <div class="upload-card">
               <div id="pixDropzone" class="dropzone">
                 <input id="pixFileInput" type="file" accept=".xlsx,.xls,.csv">
@@ -52,6 +52,17 @@
               </div>
               <div id="pixMessage" class="message"></div>
             </div>
+
+            <aside class="columns-card">
+              <div class="columns-head">
+                <span class="check">↻</span>
+                <div>
+                  <h3>Últimas importações PIX</h3>
+                  <p>Arquivos enviados neste navegador</p>
+                </div>
+              </div>
+              <ul id="pixImportHistoryList" class="history-list"></ul>
+            </aside>
           </div>
 
           <section id="pixPreview" class="preview-card">
@@ -64,7 +75,7 @@
         <section id="bennerView" class="import-view">
           <div class="benner-info"><h3>Importador Base Benner</h3><p>O arquivo será salvo na aba <strong>Base Benner</strong>. O campo <strong>HANDLE</strong> é a chave única: registros com Handle já existente serão ignorados, e somente os novos serão gravados.</p></div>
 
-          <div class="single-workspace">
+          <div class="workspace">
             <div class="upload-card">
               <div id="bennerDropzone" class="dropzone">
                 <input id="bennerFileInput" type="file" accept=".xlsx,.xls,.csv">
@@ -76,6 +87,17 @@
               </div>
               <div id="bennerMessage" class="message"></div>
             </div>
+
+            <aside class="columns-card">
+              <div class="columns-head">
+                <span class="check">↻</span>
+                <div>
+                  <h3>Últimas importações Benner</h3>
+                  <p>Arquivos enviados neste navegador</p>
+                </div>
+              </div>
+              <ul id="bennerImportHistoryList" class="history-list"></ul>
+            </aside>
           </div>
 
           <section id="bennerPreview" class="preview-card">
@@ -85,7 +107,7 @@
           </section>
         </section>
       </section>
-      <footer class="footer"><span>Smartoperations • Conciliação PIX</span><span>v1.2.0</span></footer>
+      <footer class="footer"><span>Smartoperations • Conciliação PIX</span><span>v1.3.0</span></footer>
     </main>
   </div>
   <script>
@@ -93,6 +115,62 @@
 
     const PIX_COLUMNS=["Fornecedor","OS","ID","Status","Aprovador","Data de Criação","Data de Aprovação","Cliente","Consultor Solicitante","Departamento","Tipo de Serviço","Valor Total"];
     const BENNER_COLUMNS=["PEDIDO","RLOC","HANDLE","EMISSOR","EMISSAO","GRUPO CLIENTE","NÚMERO DA FATURA CLIENTE","DATAVENCIMENTO","VALOR COBRADO","STATUS FATURA CLIENTE","NUMERO CONFERENCIA","RAZAO SOCIAL FORNECEDOR","OBT","HANDLE DATA","AP DE PAGTO","VALOR LANÇADO","CHAVE DE BAIXA","CONTA"];
+
+    const IMPORT_HISTORY_KEYS={pix:"pix-import-history",benner:"benner-import-history"};
+    const historyElements={
+      pix:document.getElementById("pixImportHistoryList"),
+      benner:document.getElementById("bennerImportHistoryList")
+    };
+
+    function getImportHistory(type){
+      try{
+        const saved=JSON.parse(localStorage.getItem(IMPORT_HISTORY_KEYS[type])||"[]");
+        return Array.isArray(saved)?saved:[];
+      }catch(error){
+        return [];
+      }
+    }
+
+    function saveImportHistory(type,history){
+      localStorage.setItem(IMPORT_HISTORY_KEYS[type],JSON.stringify(history.slice(0,8)));
+    }
+
+    function addImportHistory(type,fileName,rowCount){
+      const history=getImportHistory(type);
+      history.unshift({
+        fileName:String(fileName||"Arquivo sem nome"),
+        importedAt:new Date().toISOString(),
+        rowCount:Number(rowCount)||0
+      });
+      saveImportHistory(type,history);
+      renderImportHistory(type);
+    }
+
+    function formatHistoryDate(value){
+      const date=new Date(value);
+      if(Number.isNaN(date.getTime()))return "";
+      return new Intl.DateTimeFormat("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}).format(date);
+    }
+
+    function renderImportHistory(type){
+      const element=historyElements[type];
+      const history=getImportHistory(type);
+      if(!element)return;
+      if(!history.length){
+        element.innerHTML='<li class="history-empty">Nenhum arquivo foi importado neste navegador.</li>';
+        return;
+      }
+      element.innerHTML=history.map(item=>`
+        <li class="history-item">
+          <b class="history-icon">✓</b>
+          <div class="history-content">
+            <strong title="${escapeAttr(item.fileName)}">${escapeHtml(item.fileName)}</strong>
+            <small>${escapeHtml(formatHistoryDate(item.importedAt))}</small>
+          </div>
+          <i class="history-count">${Number(item.rowCount||0)} reg.</i>
+        </li>
+      `).join("");
+    }
 
     const themeButton=document.getElementById("themeButton");
     if(localStorage.getItem("pix-theme")==="dark")document.body.classList.add("dark");
@@ -102,10 +180,10 @@
 
     const pixTab=document.getElementById("pixTab"),bennerTab=document.getElementById("bennerTab"),pixView=document.getElementById("pixView"),bennerView=document.getElementById("bennerView");
     function activateImport(type){const pix=type==="pix";pixTab.classList.toggle("active",pix);bennerTab.classList.toggle("active",!pix);pixView.classList.toggle("active",pix);bennerView.classList.toggle("active",!pix)}
-    pixTab.onclick=()=>activateImport("pix");bennerTab.onclick=()=>activateImport("benner");
+    pixTab.onclick=()=>activateImport("pix");bennerTab.onclick=()=>activateImport("benner");renderImportHistory("pix");renderImportHistory("benner");
 
     function normalize(value){return String(value??"").trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase()}
-    function escapeHtml(value){const div=document.createElement("div");div.textContent=String(value??"");return div.innerHTML}
+    function escapeHtml(value){const div=document.createElement("div");div.textContent=String(value??"");return div.innerHTML}function escapeAttr(value){return escapeHtml(value).replace(/"/g,"&quot;")}
     function showMessage(element,text,type){element.textContent=text;element.className=`message show ${type}`}
     function readWorkbook(file,onSuccess,onError){if(!file)return;if(file.size>10*1024*1024)return onError("O arquivo ultrapassa o limite de 10 MB.");if(!/\.(xlsx|xls|csv)$/i.test(file.name))return onError("Formato inválido. Envie um arquivo XLSX, XLS ou CSV.");const reader=new FileReader();reader.onload=event=>{try{const workbook=XLSX.read(event.target.result,{type:"array",cellDates:true});const sheet=workbook.Sheets[workbook.SheetNames[0]];const matrix=XLSX.utils.sheet_to_json(sheet,{header:1,defval:"",raw:false});if(!matrix.length)throw new Error("A primeira aba está vazia.");onSuccess(matrix)}catch(error){onError(error.message||"Não foi possível ler a planilha.")}};reader.onerror=()=>onError("Não foi possível ler o arquivo.");reader.readAsArrayBuffer(file)}
     function mapRows(matrix,columns){const headerIndex=matrix.slice(0,40).findIndex(row=>{const headers=row.map(normalize);return columns.every(column=>headers.includes(normalize(column)))});if(headerIndex<0)throw new Error(`Não foi encontrada uma linha contendo todas as ${columns.length} colunas obrigatórias.`);const map={};matrix[headerIndex].forEach((header,index)=>map[normalize(header)]=index);const dataRows=matrix.slice(headerIndex+1).filter(row=>columns.some(column=>String(row[map[normalize(column)]]??"").trim()!==""));return {headerIndex,rows:dataRows.map(row=>Object.fromEntries(columns.map(column=>[column,row[map[normalize(column)]]??""])))} }
@@ -116,14 +194,14 @@
     pixDropzone.onclick=e=>{if(!e.target.closest("input"))pixFileInput.click()};pixFileInput.onchange=()=>processPix(pixFileInput.files[0]);
     ["dragenter","dragover"].forEach(t=>pixDropzone.addEventListener(t,e=>{e.preventDefault();pixDropzone.classList.add("drag")}));["dragleave","drop"].forEach(t=>pixDropzone.addEventListener(t,e=>{e.preventDefault();pixDropzone.classList.remove("drag")}));pixDropzone.addEventListener("drop",e=>processPix(e.dataTransfer.files[0]));
     function processPix(file){pixPreview.classList.remove("show");pixSendButton.disabled=true;window.pixRows=[];window.pixSourceFile="";readWorkbook(file,matrix=>{try{const result=mapRows(matrix,PIX_COLUMNS);window.pixRows=result.rows;window.pixSourceFile=file.name;document.getElementById("pixFileTitle").textContent=file.name;document.getElementById("pixFileText").textContent=`${result.rows.length} registros válidos encontrados`;document.getElementById("pixRowCount").textContent=`${result.rows.length} registros • mostrando até 10`;document.getElementById("pixTableHead").innerHTML=`<tr>${PIX_COLUMNS.map(c=>`<th>${escapeHtml(c)}</th>`).join("")}</tr>`;document.getElementById("pixTableBody").innerHTML=result.rows.slice(0,10).map(r=>`<tr>${PIX_COLUMNS.map(c=>`<td>${escapeHtml(r[c])}</td>`).join("")}</tr>`).join("");pixPreview.classList.add("show");pixSendButton.disabled=false;showMessage(pixMessage,`Planilha validada. Cabeçalho localizado na linha ${result.headerIndex+1}.`,"success")}catch(e){showMessage(pixMessage,e.message,"error")}},msg=>showMessage(pixMessage,msg,"error"))}
-    pixSendButton.onclick=async()=>{if(!window.pixRows?.length)return showMessage(pixMessage,"Selecione uma planilha antes de enviar.","error");pixSendButton.disabled=true;pixSendButton.textContent="Enviando...";try{await sendPayload({action:"import",sourceFile:window.pixSourceFile,rows:window.pixRows});showMessage(pixMessage,`${window.pixRows.length} registros enviados para a Conciliação PIX.`,"success");pixSendButton.textContent="Solicitação enviada ✓"}catch(e){showMessage(pixMessage,"Não foi possível enviar os registros.","error");pixSendButton.disabled=false;pixSendButton.textContent="Enviar ao Google Sheets →"}};
+    pixSendButton.onclick=async()=>{if(!window.pixRows?.length)return showMessage(pixMessage,"Selecione uma planilha antes de enviar.","error");pixSendButton.disabled=true;pixSendButton.textContent="Enviando...";try{await sendPayload({action:"import",sourceFile:window.pixSourceFile,rows:window.pixRows});showMessage(pixMessage,`${window.pixRows.length} registros enviados para a Conciliação PIX.`,"success");addImportHistory("pix",window.pixSourceFile,window.pixRows.length);pixSendButton.textContent="Solicitação enviada ✓"}catch(e){showMessage(pixMessage,"Não foi possível enviar os registros.","error");pixSendButton.disabled=false;pixSendButton.textContent="Enviar ao Google Sheets →"}};
 
     // BENNER
     const bennerDropzone=document.getElementById("bennerDropzone"),bennerFileInput=document.getElementById("bennerFileInput"),bennerMessage=document.getElementById("bennerMessage"),bennerPreview=document.getElementById("bennerPreview"),bennerSendButton=document.getElementById("bennerSendButton");
     bennerDropzone.onclick=e=>{if(!e.target.closest("input"))bennerFileInput.click()};bennerFileInput.onchange=()=>processBenner(bennerFileInput.files[0]);
     ["dragenter","dragover"].forEach(t=>bennerDropzone.addEventListener(t,e=>{e.preventDefault();bennerDropzone.classList.add("drag")}));["dragleave","drop"].forEach(t=>bennerDropzone.addEventListener(t,e=>{e.preventDefault();bennerDropzone.classList.remove("drag")}));bennerDropzone.addEventListener("drop",e=>processBenner(e.dataTransfer.files[0]));
     function processBenner(file){bennerPreview.classList.remove("show");bennerSendButton.disabled=true;window.bennerRows=[];window.bennerSourceFile="";readWorkbook(file,matrix=>{try{const result=mapRows(matrix,BENNER_COLUMNS);const seen=new Set();let duplicates=0;const unique=result.rows.filter(row=>{const handle=String(row.HANDLE??"").trim();if(!handle)throw new Error("Há registro sem HANDLE na Base Benner.");if(seen.has(handle)){duplicates++;return false}seen.add(handle);row.HANDLE=handle;return true});window.bennerRows=unique;window.bennerSourceFile=file.name;document.getElementById("bennerFileTitle").textContent=file.name;document.getElementById("bennerFileText").textContent=`${unique.length} Handles únicos encontrados`;document.getElementById("bennerRowCount").textContent=`${unique.length} registros únicos • ${duplicates} repetidos no arquivo • mostrando até 10`;document.getElementById("bennerTableHead").innerHTML=`<tr>${BENNER_COLUMNS.map(c=>`<th>${escapeHtml(c)}</th>`).join("")}</tr>`;document.getElementById("bennerTableBody").innerHTML=unique.slice(0,10).map(r=>`<tr>${BENNER_COLUMNS.map(c=>`<td>${escapeHtml(r[c])}</td>`).join("")}</tr>`).join("");bennerPreview.classList.add("show");bennerSendButton.disabled=false;showMessage(bennerMessage,`Base validada: ${unique.length} Handles únicos e ${duplicates} duplicados internos ignorados.`,"success")}catch(e){showMessage(bennerMessage,e.message,"error")}},msg=>showMessage(bennerMessage,msg,"error"))}
-    bennerSendButton.onclick=async()=>{if(!window.bennerRows?.length)return showMessage(bennerMessage,"Selecione uma Base Benner antes de enviar.","error");bennerSendButton.disabled=true;bennerSendButton.textContent="Enviando Base Benner...";try{await sendPayload({action:"importBenner",sourceFile:window.bennerSourceFile,rows:window.bennerRows});showMessage(bennerMessage,`${window.bennerRows.length} registros enviados. O Apps Script gravará apenas Handles novos.`,"success");bennerSendButton.textContent="Solicitação enviada ✓"}catch(e){showMessage(bennerMessage,"Não foi possível enviar a Base Benner.","error");bennerSendButton.disabled=false;bennerSendButton.textContent="Enviar Base Benner →"}};
+    bennerSendButton.onclick=async()=>{if(!window.bennerRows?.length)return showMessage(bennerMessage,"Selecione uma Base Benner antes de enviar.","error");bennerSendButton.disabled=true;bennerSendButton.textContent="Enviando Base Benner...";try{await sendPayload({action:"importBenner",sourceFile:window.bennerSourceFile,rows:window.bennerRows});showMessage(bennerMessage,`${window.bennerRows.length} registros enviados. O Apps Script gravará apenas Handles novos.`,"success");addImportHistory("benner",window.bennerSourceFile,window.bennerRows.length);bennerSendButton.textContent="Solicitação enviada ✓"}catch(e){showMessage(bennerMessage,"Não foi possível enviar a Base Benner.","error");bennerSendButton.disabled=false;bennerSendButton.textContent="Enviar Base Benner →"}};
   </script>
 </body>
 </html>
