@@ -1,3 +1,262 @@
+ChatGPT
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Convidar membros da equipe
+
+Texto colado(33).txt
+Documento
+Segue index publicado, e o app script. Faça a conexão dos 2 segue link do appscript https://script.google.com/macros/s/AKfycbz9yjkk4szt3_qU7YD_I2lsCdy15AjZjoL9o2Jkudy8KB_2EVozqQX1izImvjUE-aDmrA/exec
+segue link do google sheets 1As2v-YsZkJA8Q7vpyKtJJ9PlHaFipY7M63NTiyxuvBo
+
+
+
+/**
+ * SISTEMA DE CONCILIAÇÃO PIX
+ * Backend em Google Apps Script.
+ *
+ * Este arquivo deve ser colado no editor de Apps Script (Extensions > Apps Script)
+ * de uma planilha Google Sheets, no arquivo "Code.gs".
+ *
+ * Ele cria/usa uma aba chamada "Itens" na planilha para guardar todos os registros
+ * importados do Excel e os que forem editados/duplicados/excluídos pelo sistema.
+ */
+
+var SHEET_NAME = 'Itens';
+
+// Ordem interna dos campos (tem que bater com o array FIELDS do index.html)
+var FIELD_KEYS = [
+  'fornecedor', 'os', 'obt', 'idPedido', 'status', 'aprovador',
+  'dataCriacao', 'dataAprovacao', 'cliente', 'consultorSolicitante',
+  'emissorPedido', 'cnpjCpf', 'instituicao', 'agencia', 'contaCorrente',
+  'departamento', 'tipoServico', 'chavePixDigitada', 'tipoChavePix',
+  'chavePix', 'descricaoPagamento', 'valorTotal'
+];
+
+// Cabeçalho da aba "Itens" (coluna A = RowID interno, última coluna = timestamp do sistema)
+var HEADER_ROW = [
+  'RowID', 'Fornecedor', 'OS', 'Obt', 'ID', 'Status', 'Aprovador',
+  'Data de Criação', 'Data de Aprovação', 'Cliente', 'Consultor Solicitante',
+  'Emissor do Pedido', 'CNPJ/CPF', 'Instituição', 'Agência', 'Conta Corrente',
+  'Departamento', 'Tipo de Serviço', 'Chave Pix Foi Digitada?', 'Tipo de Chave Pix',
+  'Chave Pix', 'Descrição do Pagamento', 'Valor Total', 'Criado em (sistema)'
+];
+
+/**
+ * Ponto de entrada do Web App. É isso que é exibido quando você abre a URL publicada.
+ */
+function doGet() {
+  return HtmlService.createHtmlOutputFromFile('index')
+    .setTitle('Conciliação Pix')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+/**
+ * Retorna (e cria, se ainda não existir) a aba "Itens" com o cabeçalho certo.
+ */
+function getSheet_() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_NAME);
+    sheet.appendRow(HEADER_ROW);
+    sheet.setFrozenRows(1);
+    sheet.getRange(1, 1, 1, HEADER_ROW.length).setFontWeight('bold');
+  }
+  return sheet;
+}
+
+/** Converte uma linha da planilha (array) em um objeto "item" usado pelo front-end. */
+function rowToItem_(row) {
+  var item = { rowId: row[0] };
+  for (var i = 0; i < FIELD_KEYS.length; i++) {
+    item[FIELD_KEYS[i]] = row[i + 1];
+  }
+  item.criadoEm = row[FIELD_KEYS.length + 1];
+  return item;
+}
+
+/** Converte um objeto "item" em uma linha (array) pronta para gravar na planilha. */
+function itemToRow_(item, rowId, criadoEm) {
+  var row = [rowId];
+  for (var i = 0; i < FIELD_KEYS.length; i++) {
+    var key = FIELD_KEYS[i];
+    row.push(item[key] !== undefined && item[key] !== null ? item[key] : '');
+  }
+  row.push(criadoEm);
+  return row;
+}
+
+/**
+ * Retorna todos os itens cadastrados. Chamada pelo front-end ao carregar a tela de lista.
+ */
+function getItems() {
+  var sheet = getSheet_();
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 2) return [];
+  var data = sheet.getRange(2, 1, lastRow - 1, HEADER_ROW.length).getValues();
+  return data
+    .filter(function (r) { return r[0] !== '' && r[0] !== null; })
+    .map(rowToItem_);
+}
+
+/**
+ * Importa uma lista de itens vindos do Excel (já processados no navegador pelo SheetJS).
+ * Cada item recebe um RowID novo e a data/hora de importação.
+ */
+function importItems(items) {
+  var sheet = getSheet_();
+  var now = new Date();
+  var rows = items.map(function (item) {
+    return itemToRow_(item, Utilities.getUuid(), now);
+  });
+  if (rows.length > 0) {
+    sheet.getRange(sheet.getLastRow() + 1, 1, rows.length, HEADER_ROW.length).setValues(rows);
+  }
+  return getItems();
+}
+
+/**
+ * Adiciona um único item novo (usado pelo botão "+ Novo item" da tela de lista).
+ */
+function addItem(item) {
+  var sheet = getSheet_();
+  var row = itemToRow_(item, Utilities.getUuid(), new Date());
+  sheet.getRange(sheet.getLastRow() + 1, 1, 1, HEADER_ROW.length).setValues([row]);
+  return getItems();
+}
+
+/** Localiza o número da linha (1-based, considerando o cabeçalho) de um RowID. Retorna -1 se não achar. */
+function findRowIndexById_(sheet, rowId) {
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 2) return -1;
+  var ids = sheet.getRange(2, 1, lastRow - 1, 1).getValues();
+  for (var i = 0; i < ids.length; i++) {
+    if (ids[i][0] === rowId) return i + 2;
+  }
+  return -1;
+}
+
+/**
+ * EDITAR: atualiza todos os campos de um item existente.
+ */
+function updateItem(rowId, item) {
+  var sheet = getSheet_();
+  var idx = findRowIndexById_(sheet, rowId);
+  if (idx === -1) throw new Error('Item não encontrado. Atualize a página e tente novamente.');
+  var values = FIELD_KEYS.map(function (key) {
+    return item[key] !== undefined && item[key] !== null ? item[key] : '';
+  });
+  sheet.getRange(idx, 2, 1, FIELD_KEYS.length).setValues([values]);
+  return getItems();
+}
+
+/**
+ * DUPLICAR: cria uma cópia do item logo abaixo do original, com novo RowID.
+ */
+function duplicateItem(rowId) {
+  var sheet = getSheet_();
+  var idx = findRowIndexById_(sheet, rowId);
+  if (idx === -1) throw new Error('Item não encontrado. Atualize a página e tente novamente.');
+  var row = sheet.getRange(idx, 1, 1, HEADER_ROW.length).getValues()[0];
+  row[0] = Utilities.getUuid();
+  row[FIELD_KEYS.length + 1] = new Date();
+  var descIdx = 1 + FIELD_KEYS.indexOf('descricaoPagamento');
+  row[descIdx] = (row[descIdx] ? row[descIdx] + ' ' : '') + '(cópia)';
+  sheet.insertRowAfter(idx);
+  sheet.getRange(idx + 1, 1, 1, HEADER_ROW.length).setValues([row]);
+  return getItems();
+}
+
+/**
+ * EXCLUIR: remove a linha correspondente ao item.
+ */
+function deleteItem(rowId) {
+  var sheet = getSheet_();
+  var idx = findRowIndexById_(sheet, rowId);
+  if (idx === -1) throw new Error('Item não encontrado. Atualize a página e tente novamente.');
+  sheet.deleteRow(idx);
+  return getItems();
+}
+
+
+
+Pensou por 54s
+Conectei o backend diretamente à planilha pelo ID:
+
+1As2v-YsZkJA8Q7vpyKtJJ9PlHaFipY7M63NTiyxuvBo
+
+A alteração essencial foi substituir SpreadsheetApp.getActiveSpreadsheet() por:
+
+SpreadsheetApp.openById(SPREADSHEET_ID)
+Isso é necessário porque um Web App publicado nem sempre possui uma planilha ativa. O seu index.html já está preparado para chamar o backend com google.script.run, desde que os dois arquivos estejam no mesmo projeto do Apps Script. 
+
+
+Arquivos prontos
+Baixar pacote completo
+
+Baixar Code.gs corrigido
+
+index.html
+
+INSTRUCOES.txt
+
+No Apps Script que gerou sua URL publicada:
+
+Substitua o conteúdo do Code.gs.
+
+Crie ou atualize o arquivo HTML chamado exatamente index.
+
+Execute uma vez a função testConnection e autorize o acesso.
+
+Entre em Implantar → Gerenciar implantações.
+
+Edite a implantação e selecione uma nova versão.
+
+Abra novamente a URL /exec.
+
+A aba Itens será criada automaticamente na planilha caso ainda não exista. O código também inclui tratamento de datas, validações básicas e comparação mais segura dos identificadores das linhas.
+
+
+
+index.html
+HTML
+
+
+INSTRUCOES.txt
+Documento
+
+
+Biblioteca
+/
+index.html
+
+
+
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -893,3 +1152,4 @@ document.getElementById('item-form').addEventListener('submit', function(e){
 </script>
 </body>
 </html>
+O menu 1Password está disponível. Pressione a seta para baixo para selecionar.
