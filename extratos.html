@@ -786,14 +786,14 @@
 
       <footer class="footer">
         <span>Smartoperations • Conciliação PIX</span>
-        <span>v2.2.2</span>
+        <span>v2.3.0</span>
       </footer>
     </main>
   </div>
 
   <script>
     const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbz9yjkk4szt3_qU7YD_I2lsCdy15AjZjoL9o2Jkudy8KB_2EVozqQX1izImvjUE-aDmrA/exec";
-    const REQUIRED_SOURCE_COLUMNS=["amount","created","description","name"];
+    const REQUIRED_SOURCE_COLUMNS=["id","amount","created","description","name"];
     const RECORDS_PER_PAGE=10;
 
     let records=[];
@@ -967,7 +967,7 @@
 
           if(headerIndex<0){
             throw new Error(
-              "Não foram encontradas as colunas amount, created, description e name."
+              "Não foram encontradas as colunas id, amount, created, description e name."
             );
           }
 
@@ -987,23 +987,53 @@
             );
 
           const transformed=sourceRows.map(row=>{
+            const id=String(row[map.id]??"").trim();
             const amount=parseAmount(row[map.amount]);
             const name=String(row[map.name]??"").trim();
             const description=decodeHtml(row[map.description]);
             const type=determineType(name,description);
 
             return {
+              "ID":id,
               "Valor":amount,
               "Data":formatDate(row[map.created]),
               "Descrição":name||description,
               "C/D":type
             };
+          }).filter(row=>row.ID);
+
+          const existingIds=new Set(
+            records
+              .map(record=>String(record.ID??"").trim())
+              .filter(Boolean)
+          );
+
+          const fileIds=new Set();
+          const newRows=[];
+          let skippedDuplicates=0;
+
+          transformed.forEach(row=>{
+            if(existingIds.has(row.ID)||fileIds.has(row.ID)){
+              skippedDuplicates++;
+              return;
+            }
+
+            fileIds.add(row.ID);
+            newRows.push(row);
           });
 
           if(!transformed.length){
             throw new Error(
-              "Nenhum lançamento válido foi encontrado."
+              "Nenhum lançamento válido com ID foi encontrado."
             );
+          }
+
+          if(!newRows.length){
+            showMessage(
+              `Nenhum lançamento novo foi encontrado. ${skippedDuplicates} ID(s) já existiam.`,
+              "info"
+            );
+            return;
           }
 
           importButton.textContent="Enviando ao Google Sheets...";
@@ -1011,7 +1041,7 @@
           const payload=JSON.stringify({
             action:"importExtrato",
             sourceFile:file.name,
-            rows:transformed
+            rows:newRows
           });
 
           await fetch(
@@ -1024,7 +1054,7 @@
           );
 
           showMessage(
-            `${transformed.length} lançamentos enviados. Atualizando a listagem...`,
+            `${newRows.length} lançamento(s) novo(s) enviado(s). ${skippedDuplicates} duplicado(s) desconsiderado(s). Atualizando a listagem...`,
             "success"
           );
 
@@ -1106,6 +1136,7 @@
         <table>
           <thead>
             <tr>
+              <th>ID</th>
               <th>Valor</th>
               <th>Data</th>
               <th>Descrição</th>
@@ -1122,6 +1153,7 @@
 
               return `
                 <tr>
+                  <td title="${escapeAttr(row.ID)}">${escapeHtml(row.ID)}</td>
                   <td class="amount ${type}">
                     ${formatCurrency(parseAmount(row.Valor))}
                   </td>
