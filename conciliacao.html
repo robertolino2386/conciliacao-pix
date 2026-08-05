@@ -304,7 +304,7 @@
 
     .stats{
       display:grid;
-      grid-template-columns:repeat(3,1fr);
+      grid-template-columns:repeat(4,1fr);
       gap:15px;
       margin-bottom:20px
     }
@@ -430,6 +430,15 @@
     .status.aprovado{background:#e3f5ef;color:#247b66}
     .status.reprovado{background:#ffeded;color:#aa4343}
     .status.outro{background:#fff5d9;color:#927121}
+    .result{display:inline-flex;padding:5px 9px;border-radius:20px;font-size:9px;font-weight:800}
+    .result.conciliado{background:#e3f5ef;color:#247b66}
+    .result.divergente{background:#ffeded;color:#aa4343}
+    .divergence-list{max-width:340px;white-space:normal;line-height:1.45;color:#aa4343}
+    .divergence-list ul{margin:0;padding-left:15px}
+    .reconciled-row{background:#f6fcfa}
+    .divergent-row{background:#fffafa}
+    body.dark .reconciled-row{background:#143832}
+    body.dark .divergent-row{background:#3a2428}
 
     .actions-column{
       width:84px;
@@ -941,15 +950,23 @@
           <article class="stat">
             <span class="stat-icon">✓</span>
             <div>
-              <small>Aprovados</small>
-              <strong id="approvedRecords">—</strong>
+              <small>Conciliados</small>
+              <strong id="reconciledRecords">—</strong>
+            </div>
+          </article>
+
+          <article class="stat">
+            <span class="stat-icon">!</span>
+            <div>
+              <small>Divergentes</small>
+              <strong id="divergentRecords">—</strong>
             </div>
           </article>
 
           <article class="stat">
             <span class="stat-icon">R$</span>
             <div>
-              <small>Valor total</small>
+              <small>Valor total PIX</small>
               <strong id="totalValue">—</strong>
             </div>
           </article>
@@ -963,9 +980,18 @@
             </div>
 
             <div class="filter-group">
-              <label for="statusFilter">Status</label>
+              <label for="statusFilter">Status do registro</label>
               <select id="statusFilter">
                 <option value="">Todos</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label for="conciliationFilter">Resultado</label>
+              <select id="conciliationFilter">
+                <option value="">Todos</option>
+                <option value="Conciliado">Conciliado</option>
+                <option value="Divergente">Divergente</option>
               </select>
             </div>
 
@@ -987,7 +1013,7 @@
 
       <footer class="footer">
         <span>Smartoperations • Conciliação PIX</span>
-        <span id="versionInfo">Front v2.3.0 • API verificando...</span>
+        <span id="versionInfo">Front v2.5.0 • API verificando...</span>
       </footer>
     </main>
   </div>
@@ -1039,7 +1065,7 @@
     ];
 
     const RECORDS_PER_PAGE=10;
-    const EXPECTED_API_VERSION="2.3.0";
+    const EXPECTED_API_VERSION="2.5.0";
 
     let records=[];
     let filtered=[];
@@ -1055,6 +1081,7 @@
     const sidebarToggle=document.getElementById("sidebarToggle");
     const statusFilter=document.getElementById("statusFilter");
     const duplicateOnly=document.getElementById("duplicateOnly");
+    const conciliationFilter=document.getElementById("conciliationFilter");
 
     if(localStorage.getItem("pix-theme")==="dark"){
       document.body.classList.add("dark");
@@ -1100,7 +1127,7 @@
 
       const timeout=setTimeout(()=>{
         cleanup();
-        versionInfo.textContent=`Front v2.3.0 • API não verificada`;
+        versionInfo.textContent=`Front v2.5.0 • API não verificada`;
         versionInfo.title="Não foi possível confirmar a versão publicada do Apps Script.";
       },10000);
 
@@ -1117,7 +1144,7 @@
         const compatible=apiVersion===EXPECTED_API_VERSION;
 
         versionInfo.textContent=
-          `Front v2.3.0 • API v${apiVersion}`;
+          `Front v2.5.0 • API v${apiVersion}`;
 
         versionInfo.title=compatible
           ? "Frontend e Apps Script estão na versão esperada."
@@ -1133,7 +1160,7 @@
 
       script.onerror=()=>{
         cleanup();
-        versionInfo.textContent="Front v2.3.0 • API indisponível";
+        versionInfo.textContent="Front v2.5.0 • API indisponível";
         versionInfo.title="Falha ao consultar a versão do Apps Script.";
       };
 
@@ -1150,7 +1177,7 @@
 
       const timeout=setTimeout(()=>{
         cleanup();
-        showLoadError("A consulta demorou demais. Verifique se a implantação 2.3.0 do Apps Script foi publicada.");
+        showLoadError("A consulta demorou demais. Verifique se a implantação 2.5.0 do Apps Script foi publicada.");
       },15000);
 
       function cleanup(){
@@ -1203,6 +1230,7 @@
       const query=normalize(searchInput.value);
       const selectedStatus=normalize(statusFilter.value);
       const onlyDuplicates=duplicateOnly.checked;
+      const selectedConciliation=normalize(conciliationFilter.value);
 
       filtered=records.filter(record=>{
         const textMatches=
@@ -1219,7 +1247,11 @@
           !onlyDuplicates||
           isDuplicateRecord(record);
 
-        return textMatches&&statusMatches&&duplicateMatches;
+        const conciliationMatches=
+          !selectedConciliation||
+          normalize(record._conciliationStatus)===selectedConciliation;
+
+        return textMatches&&statusMatches&&duplicateMatches&&conciliationMatches;
       });
 
       currentPage=1;
@@ -1269,16 +1301,34 @@
       }
 
       const visible=[
-        "Fornecedor",
+        "_conciliationStatus",
+        "_divergences",
         "OS",
-        "ID",
-        "Status",
-        "Aprovador",
+        "_bennerPedido",
         "Cliente",
-        "Departamento",
-        "Tipo de Serviço",
-        "Valor Total"
+        "_bennerGrupoCliente",
+        "Valor Total",
+        "_bennerValorLancado",
+        "_bennerConta",
+        "_bennerNumeroConferencia",
+        "_bennerChaveBaixa",
+        "Status"
       ];
+
+      const labels={
+        "_conciliationStatus":"Resultado",
+        "_divergences":"Divergências",
+        "OS":"OS PIX",
+        "_bennerPedido":"Pedido Benner",
+        "Cliente":"Cliente PIX",
+        "_bennerGrupoCliente":"Grupo Cliente",
+        "Valor Total":"Valor PAG PIX",
+        "_bennerValorLancado":"Valor Lançado VM",
+        "_bennerConta":"Conta Baixada",
+        "_bennerNumeroConferencia":"Nº Conferência",
+        "_bennerChaveBaixa":"Chave Baixa PIX",
+        "Status":"Status original"
+      };
 
       const startIndex=(currentPage-1)*RECORDS_PER_PAGE;
       const endIndex=startIndex+RECORDS_PER_PAGE;
@@ -1310,13 +1360,13 @@
           <thead>
             <tr>
               <th class="actions-column" aria-label="Ações"></th>
-              ${visible.map(column=>`<th>${escapeHtml(column)}</th>`).join("")}
+              ${visible.map(column=>`<th>${escapeHtml(labels[column]||column)}</th>`).join("")}
             </tr>
           </thead>
 
           <tbody>
             ${pageRecords.map(record=>`
-              <tr class="${isDuplicateRecord(record)?"duplicate-row":""}">
+              <tr class="${isDuplicateRecord(record)?"duplicate-row":normalize(record._conciliationStatus)==="conciliado"?"reconciled-row":"divergent-row"}">
                 <td class="actions-column">
                   <div class="row-actions">
                     <button
@@ -1357,9 +1407,21 @@
                   </div>
                 </td>
 
-                ${visible.map(column=>
-                  column==="Status"
-                    ? `
+                ${visible.map(column=>{
+                  if(column==="_conciliationStatus"){
+                    const cls=normalize(record[column])==="conciliado"?"conciliado":"divergente";
+                    return `<td><span class="result ${cls}">${escapeHtml(record[column]||"Divergente")}</span></td>`;
+                  }
+
+                  if(column==="_divergences"){
+                    const divergences=Array.isArray(record[column])?record[column]:[];
+                    return divergences.length
+                      ? `<td><div class="divergence-list"><ul>${divergences.map(item=>`<li>${escapeHtml(item)}</li>`).join("")}</ul></div></td>`
+                      : '<td><span class="result conciliado">Sem divergências</span></td>';
+                  }
+
+                  if(column==="Status"){
+                    return `
                       <td>
                         <span class="status ${statusClass(record[column])}">
                           ${escapeHtml(record[column])}
@@ -1370,17 +1432,15 @@
                             : ''
                         }
                       </td>
-                    `
-                    : `
-                      <td title="${escapeAttr(record[column])}">
-                        ${
-                          column==="Valor Total"
-                            ? formatCurrency(record[column])
-                            : escapeHtml(record[column])
-                        }
-                      </td>
-                    `
-                ).join("")}
+                    `;
+                  }
+
+                  if(column==="Valor Total"||column==="_bennerValorLancado"){
+                    return `<td>${formatCurrency(record[column])}</td>`;
+                  }
+
+                  return `<td title="${escapeAttr(record[column])}">${escapeHtml(record[column])}</td>`;
+                }).join("")}
               </tr>
             `).join("")}
           </tbody>
@@ -1534,9 +1594,15 @@
       document.getElementById("totalRecords").textContent=
         records.length.toLocaleString("pt-BR");
 
-      document.getElementById("approvedRecords").textContent=
+      document.getElementById("reconciledRecords").textContent=
         records
-          .filter(record=>normalize(record.Status)==="aprovado")
+          .filter(record=>normalize(record._conciliationStatus)==="conciliado")
+          .length
+          .toLocaleString("pt-BR");
+
+      document.getElementById("divergentRecords").textContent=
+        records
+          .filter(record=>normalize(record._conciliationStatus)==="divergente")
           .length
           .toLocaleString("pt-BR");
 
@@ -1717,6 +1783,7 @@
     searchInput.addEventListener("input",applyFilter);
     statusFilter.addEventListener("change",applyFilter);
     duplicateOnly.addEventListener("change",applyFilter);
+    conciliationFilter.addEventListener("change",applyFilter);
 
     document.getElementById("refreshButton").onclick=loadRecords;
     document.getElementById("closeModal").onclick=closeEdit;
