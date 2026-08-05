@@ -385,7 +385,7 @@
     }
 
     .search input:focus{border-color:var(--primary)}
-    .counter{font-size:10px;color:var(--muted)}
+    .counter{font-size:10px;color:var(--muted)}.filter-group{min-width:170px}.filter-group label{display:block;margin-bottom:6px;color:var(--muted);font-size:8px;font-weight:800;letter-spacing:.6px;text-transform:uppercase}.filter-group select{width:100%;height:38px;border:1px solid var(--border);background:var(--page);color:var(--text);border-radius:9px;padding:0 11px;outline:none;font-size:10px}.filter-group select:focus{border-color:var(--primary)}.duplicate-filter{height:38px;display:flex;align-items:center;gap:8px;padding:0 11px;border:1px solid var(--border);border-radius:9px;background:var(--card);color:var(--text);font-size:10px;cursor:pointer;white-space:nowrap}.duplicate-filter input{accent-color:var(--primary)}
 
     .table-wrap{
       overflow:auto;
@@ -488,7 +488,7 @@
       border-color:#a7d9d4
     }
 
-    .action-btn.duplicate{color:#526d96}
+    .action-btn.duplicate{color:#526d96}.action-btn.delete{color:var(--danger);border-color:#efb6b6}.action-btn.delete:hover{color:#fff;background:var(--danger);border-color:var(--danger)}.duplicate-row{background:#fff7f7}.duplicate-row td.actions-column{background:#fff7f7}.duplicate-badge{display:inline-flex;margin-left:6px;padding:3px 6px;border-radius:20px;background:#ffeded;color:#aa4343;font-size:8px;font-weight:800}
 
     .action-btn.edit:hover{
       color:#fff;
@@ -746,7 +746,7 @@
     }
 
     body.dark .toggle i{transform:translateX(16px)}
-    body.dark tbody tr:hover td.actions-column{background:#173a40}
+    body.dark tbody tr:hover td.actions-column{background:#173a40}body.dark .duplicate-row{background:#3a2428}body.dark .duplicate-row td.actions-column{background:#3a2428}
 
     body.sidebar-collapsed .app{
       grid-template-columns:82px 1fr
@@ -824,7 +824,7 @@
       .page-head{align-items:flex-start;gap:12px}
       .stats{gap:9px}
       .stat{padding:14px}
-      .toolbar{align-items:flex-start;flex-direction:column}
+      .toolbar{align-items:flex-start;flex-direction:column}.filter-group,.duplicate-filter{width:100%}
       .form-grid{grid-template-columns:1fr}
       .footer{padding:12px 18px}
       .pagination{align-items:flex-start;flex-direction:column}
@@ -961,6 +961,19 @@
               <span>⌕</span>
               <input id="searchInput" type="search" placeholder="Buscar por fornecedor, OS, ID, cliente...">
             </div>
+
+            <div class="filter-group">
+              <label for="statusFilter">Status</label>
+              <select id="statusFilter">
+                <option value="">Todos</option>
+              </select>
+            </div>
+
+            <label class="duplicate-filter">
+              <input id="duplicateOnly" type="checkbox">
+              <span>Somente duplicados</span>
+            </label>
+
             <span id="counter" class="counter"></span>
           </div>
 
@@ -974,7 +987,7 @@
 
       <footer class="footer">
         <span>Smartoperations • Conciliação PIX</span>
-        <span>v2.1.0</span>
+        <span>v2.2.0</span>
       </footer>
     </main>
   </div>
@@ -1039,6 +1052,8 @@
     const saveEdit=document.getElementById("saveEdit");
     const pagination=document.getElementById("pagination");
     const sidebarToggle=document.getElementById("sidebarToggle");
+    const statusFilter=document.getElementById("statusFilter");
+    const duplicateOnly=document.getElementById("duplicateOnly");
 
     if(localStorage.getItem("pix-theme")==="dark"){
       document.body.classList.add("dark");
@@ -1107,6 +1122,7 @@
         }
 
         records=Array.isArray(data.records)?data.records:[];
+        populateStatusFilter();
         currentPage=1;
         applyFilter();
         updateStats();
@@ -1136,14 +1152,26 @@
 
     function applyFilter(){
       const query=normalize(searchInput.value);
+      const selectedStatus=normalize(statusFilter.value);
+      const onlyDuplicates=duplicateOnly.checked;
 
-      filtered=!query
-        ? records
-        : records.filter(record=>
-            COLUMNS.some(column=>
-              normalize(record[column]).includes(query)
-            )
+      filtered=records.filter(record=>{
+        const textMatches=
+          !query||
+          COLUMNS.some(column=>
+            normalize(record[column]).includes(query)
           );
+
+        const statusMatches=
+          !selectedStatus||
+          normalize(record.Status)===selectedStatus;
+
+        const duplicateMatches=
+          !onlyDuplicates||
+          isDuplicateRecord(record);
+
+        return textMatches&&statusMatches&&duplicateMatches;
+      });
 
       currentPage=1;
       renderTable();
@@ -1151,6 +1179,36 @@
 
       document.getElementById("counter").textContent=
         `${filtered.length} de ${records.length} registros`;
+    }
+
+    function populateStatusFilter(){
+      const current=statusFilter.value;
+
+      const statuses=[...new Set(
+        records
+          .map(record=>String(record.Status??"").trim())
+          .filter(Boolean)
+      )].sort((a,b)=>a.localeCompare(b,"pt-BR"));
+
+      statusFilter.innerHTML=
+        '<option value="">Todos</option>'+
+        statuses.map(status=>
+          `<option value="${escapeAttr(status)}">${escapeHtml(status)}</option>`
+        ).join("");
+
+      if(statuses.includes(current)){
+        statusFilter.value=current;
+      }
+    }
+
+    function isDuplicateRecord(record){
+      return record&&(
+        record._isDuplicate===true||
+        normalize(record._isDuplicate)==="true"||
+        normalize(record.Duplicado)==="sim"||
+        normalize(record.Duplicado)==="duplicado"||
+        normalize(record.Origem)==="duplicado"
+      );
     }
 
     function renderTable(){
@@ -1192,6 +1250,12 @@
         </svg>
       `;
 
+      const deleteIcon=`
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 6l12 12M18 6 6 18"></path>
+        </svg>
+      `;
+
       tableContainer.innerHTML=`
         <table>
           <thead>
@@ -1203,7 +1267,7 @@
 
           <tbody>
             ${pageRecords.map(record=>`
-              <tr>
+              <tr class="${isDuplicateRecord(record)?"duplicate-row":""}">
                 <td class="actions-column">
                   <div class="row-actions">
                     <button
@@ -1225,6 +1289,22 @@
                     >
                       ${duplicateIcon}
                     </button>
+
+                    ${
+                      isDuplicateRecord(record)
+                        ? `
+                          <button
+                            type="button"
+                            class="action-btn delete"
+                            data-delete="${record._rowNumber}"
+                            title="Excluir registro duplicado"
+                            aria-label="Excluir registro duplicado"
+                          >
+                            ${deleteIcon}
+                          </button>
+                        `
+                        : ""
+                    }
                   </div>
                 </td>
 
@@ -1235,6 +1315,11 @@
                         <span class="status ${statusClass(record[column])}">
                           ${escapeHtml(record[column])}
                         </span>
+                        ${
+                          isDuplicateRecord(record)
+                            ? '<span class="duplicate-badge">Duplicado</span>'
+                            : ''
+                        }
                       </td>
                     `
                     : `
@@ -1487,6 +1572,37 @@
       }
     }
 
+    async function deleteDuplicateRecord(rowNumber,button){
+      const record=records.find(
+        item=>Number(item._rowNumber)===Number(rowNumber)
+      );
+
+      if(!record||!isDuplicateRecord(record)){
+        showToast("Somente registros duplicados podem ser excluídos.",true);
+        return;
+      }
+
+      if(!confirm("Deseja excluir permanentemente esta linha duplicada?")){
+        return;
+      }
+
+      button.disabled=true;
+
+      try{
+        await sendAction({
+          action:"deleteDuplicate",
+          rowNumber:Number(rowNumber)
+        });
+
+        showToast("Solicitação de exclusão enviada.");
+        setTimeout(loadRecords,1800);
+      }catch(error){
+        showToast("Não foi possível excluir o registro duplicado.",true);
+      }finally{
+        button.disabled=false;
+      }
+    }
+
     editForm.addEventListener("submit",async event=>{
       event.preventDefault();
 
@@ -1518,6 +1634,7 @@
     tableContainer.addEventListener("click",event=>{
       const edit=event.target.closest("[data-edit]");
       const duplicate=event.target.closest("[data-duplicate]");
+      const deleteButton=event.target.closest("[data-delete]");
 
       if(edit){
         openEdit(edit.dataset.edit);
@@ -1527,6 +1644,13 @@
         duplicateRecord(
           duplicate.dataset.duplicate,
           duplicate
+        );
+      }
+
+      if(deleteButton){
+        deleteDuplicateRecord(
+          deleteButton.dataset.delete,
+          deleteButton
         );
       }
     });
@@ -1542,6 +1666,8 @@
     });
 
     searchInput.addEventListener("input",applyFilter);
+    statusFilter.addEventListener("change",applyFilter);
+    duplicateOnly.addEventListener("change",applyFilter);
 
     document.getElementById("refreshButton").onclick=loadRecords;
     document.getElementById("closeModal").onclick=closeEdit;
