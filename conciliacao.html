@@ -1013,7 +1013,7 @@
 
       <footer class="footer">
         <span>Smartoperations • Conciliação PIX</span>
-        <span id="versionInfo">Front v2.5.0 • API verificando...</span>
+        <span id="versionInfo">Front v2.5.1 • API verificando...</span>
       </footer>
     </main>
   </div>
@@ -1065,7 +1065,7 @@
     ];
 
     const RECORDS_PER_PAGE=10;
-    const EXPECTED_API_VERSION="2.5.0";
+    const EXPECTED_API_VERSION="2.5.1";
 
     let records=[];
     let filtered=[];
@@ -1127,7 +1127,7 @@
 
       const timeout=setTimeout(()=>{
         cleanup();
-        versionInfo.textContent=`Front v2.5.0 • API não verificada`;
+        versionInfo.textContent=`Front v2.5.1 • API não verificada`;
         versionInfo.title="Não foi possível confirmar a versão publicada do Apps Script.";
       },10000);
 
@@ -1144,7 +1144,7 @@
         const compatible=apiVersion===EXPECTED_API_VERSION;
 
         versionInfo.textContent=
-          `Front v2.5.0 • API v${apiVersion}`;
+          `Front v2.5.1 • API v${apiVersion}`;
 
         versionInfo.title=compatible
           ? "Frontend e Apps Script estão na versão esperada."
@@ -1160,7 +1160,7 @@
 
       script.onerror=()=>{
         cleanup();
-        versionInfo.textContent="Front v2.5.0 • API indisponível";
+        versionInfo.textContent="Front v2.5.1 • API indisponível";
         versionInfo.title="Falha ao consultar a versão do Apps Script.";
       };
 
@@ -1177,7 +1177,7 @@
 
       const timeout=setTimeout(()=>{
         cleanup();
-        showLoadError("A consulta demorou demais. Verifique se a implantação 2.5.0 do Apps Script foi publicada.");
+        showLoadError("A consulta demorou demais. Verifique se a implantação 2.5.1 do Apps Script foi publicada.");
       },15000);
 
       function cleanup(){
