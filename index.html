@@ -69,13 +69,19 @@
         try{
           const workbook=XLSX.read(event.target.result,{type:"array",cellDates:true});
           const sheet=workbook.Sheets[workbook.SheetNames[0]];
-          const rows=XLSX.utils.sheet_to_json(sheet,{defval:"",raw:false});
-          if(!rows.length)throw new Error("A primeira aba está vazia.");
-          const sourceHeaders=Object.keys(rows[0]);const headerMap={};sourceHeaders.forEach(header=>headerMap[normalize(header)]=header);
-          const missing=REQUIRED_COLUMNS.filter(column=>!headerMap[normalize(column)]);
+          const matrix=XLSX.utils.sheet_to_json(sheet,{header:1,defval:"",raw:false});
+          if(!matrix.length)throw new Error("A primeira aba está vazia.");
+          const headerIndex=matrix.slice(0,30).findIndex(row=>{
+            const normalizedHeaders=row.map(normalize);
+            return REQUIRED_COLUMNS.every(column=>normalizedHeaders.includes(normalize(column)));
+          });
+          if(headerIndex<0)throw new Error("Não foi encontrada uma linha contendo as 12 colunas obrigatórias.");
+          const sourceHeaders=matrix[headerIndex];const headerMap={};sourceHeaders.forEach((header,index)=>headerMap[normalize(header)]=index);
+          const missing=REQUIRED_COLUMNS.filter(column=>headerMap[normalize(column)]===undefined);
           if(missing.length)throw new Error(`Colunas não encontradas: ${missing.join(", ")}.`);
-          const selected=rows.map(row=>Object.fromEntries(REQUIRED_COLUMNS.map(column=>[column,row[headerMap[normalize(column)]]])));
-          renderPreview(selected);window.pixRows=selected;document.getElementById("fileText").textContent=`${selected.length} registros válidos encontrados`;showMessage("Planilha validada. Todas as 12 colunas obrigatórias foram encontradas.","success");
+          const dataRows=matrix.slice(headerIndex+1).filter(row=>REQUIRED_COLUMNS.some(column=>String(row[headerMap[normalize(column)]]??"").trim()!==""));
+          const selected=dataRows.map(row=>Object.fromEntries(REQUIRED_COLUMNS.map(column=>[column,row[headerMap[normalize(column)]] ?? ""])));
+          renderPreview(selected);window.pixRows=selected;document.getElementById("fileText").textContent=`${selected.length} registros válidos encontrados`;showMessage(`Planilha validada. Cabeçalho localizado na linha ${headerIndex+1}; somente as 12 colunas necessárias serão utilizadas.`,"success");
         }catch(error){showMessage(error.message||"Não foi possível ler a planilha.","error")}
       };
       reader.readAsArrayBuffer(file);
