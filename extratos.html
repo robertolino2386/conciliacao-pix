@@ -1269,27 +1269,25 @@
     }
 
     function formatDate(value){
-      const raw=String(value??"").trim();
+  const raw = String(value ?? "").trim();
 
-      if(!raw)return "";
+  if(!raw) return "";
 
-      const isoMatch=raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  // Formato ISO: 2026-08-02T01:40:17.641898+00:00
+  const match = raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
 
-      if(isoMatch){
-        return `${isoMatch[3]}/${isoMatch[2]}/${isoMatch[1]}`;
-      }
+  if(match){
+    const [, ano, mes, dia] = match;
+    return `${dia}/${mes}/${ano}`;
+  }
 
-      const brMatch=raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  // Caso já esteja em dd/mm/aaaa
+  if(raw.includes("/")){
+    return raw.substring(0,10);
+  }
 
-      if(brMatch){
-        return `${String(brMatch[1]).padStart(2,"0")}/${String(brMatch[2]).padStart(2,"0")}/${brMatch[3]}`;
-      }
-
-      const date=new Date(raw);
-
-      if(Number.isNaN(date.getTime())){
-        return raw;
-      }
+  return raw;
+}
 
       return [
         String(date.getDate()).padStart(2,"0"),
