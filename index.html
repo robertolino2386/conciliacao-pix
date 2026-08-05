@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<base target="_top" />
+<title>Conciliação Pix</title>
+<style>
+  :root{
+    --color-primary:#32BCAD;
+    --color-primary-dark:#219188;
+    --color-bg:#f4f7f8;
+    --color-surface:#ffffff;
+    --color-border:#e0e4e6;
+    --color-text:#1f2937;
+    --color-text-muted:#6b7280;
+    --color-danger:#dc2626;
+    --color-danger-bg:#fee2e2;
+    --color-warning:#d97706;
+    --color-warning-bg:#fef3c7;
+    --color-success:#16a34a;
+    --color-success-bg:#dcfce7;
+    --color-neutral-bg:#e5e7eb;
+    --radius:10px;
+    --shadow:0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    background:var(--color-bg);
+    color:var(--color-text);
+    line-height:1.4;
+  }
+  button, input, select{ font-family:inherit; font-size:14px; }
+  a{ color:var(--color-primary-dark); }
+
+  .app-header{
+    background:var(--color-surface);
+    border-bottom:1px solid var(--color-border);
+    padding:16px 24px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .app-header h1{
+    font-size:20px;
+    margin:0;
+    color:var(--color-primary-dark);
+  }
+  .tabs{ display:flex; gap:8px; }
+  .tab-btn{
+    border:1px solid var(--color-border);
+    background:var(--color-surface);
+    color:var(--color-text-muted);
+    padding:8px 16px;
+    border-radius:999px;
+    cursor:pointer;
+    font-weight:600;
+  }
+  .tab-btn.active{
+    background:var(--color-primary);
+    border-color:var(--color-primary);
+    color:#fff;
+  }
+  .tab-btn:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible{
+    outline:2px solid var(--color-primary-dark);
+    outline-offset:2px;
+  }
+
+  main{ max-width:1100px; margin:0 auto; padding:24px; }
+  .view[hidden]{ display:none; }
+
+  .card{
+    background:var(--color-surface);
+    border:1px solid var(--color-border);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:20px;
+    margin-bottom:16px;
+  }
+  .card h2{ margin-top:0; font-size:17px; }
+  .muted{ color:var(--color-text-muted); }
+  .small{ font-size:12.5px; }
+
+  .dropzone{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    border:2px dashed var(--color-border);
+    border-radius:var(--radius);
+    padding:36px 20px;
+    cursor:pointer;
+    color:var(--color-text-muted);
+    text-align:center;
+    transition:border-color .15s, background .15s;
+  }
+  .dropzone:hover, .dropzone.dragover{
+    border-color:var(--color-primary);
+    background:#f0fbfa;
+    color:var(--color-primary-dark);
+  }
+  .dropzone svg{ width:32px; height:32px; }
+
+  .upload-actions{ display:flex; gap:10px; margin-top:14px; justify-content:flex-end; }
+  #upload-preview{ margin-top:18px; padding-top:14px; border-top:1px solid var(--color-border); }
+
+  .btn{
+    border:none;
+    border-radius:8px;
+    padding:9px 18px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .btn-primary{ background:var(--color-primary); color:#fff; }
+  .btn-primary:hover{ background:var(--color-primary-dark); }
+  .btn-secondary{ background:var(--color-neutral-bg); color:var(--color-text); }
+  .btn-secondary:hover{ background:#d1d5db; }
+  .link-btn{
+    background:none; border:none; color:var(--color-primary-dark);
+    font-weight:600; cursor:pointer; padding:0; text-decoration:underline;
+  }
+
+  .list-toolbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:16px;
+  }
+  #search-input{
+    flex:1;
+    min-width:220px;
+    padding:9px 12px;
+    border:1px solid var(--color-border);
+    border-radius:8px;
+  }
+  .toolbar-actions{ display:flex; gap:10px; }
+
+  .table-wrap{ overflow-x:auto; padding:0; }
+  table{ width:100%; border-collapse:collapse; min-width:820px; }
+  thead th{
+    text-align:left;
+    font-size:12.5px;
+    text-transform:uppercase;
+    letter-spacing:.03em;
+    color:var(--color-text-muted);
+    background:#fafbfb;
+    padding:12px 14px;
+    border-bottom:1px solid var(--color-border);
+    position:sticky; top:0;
+  }
+  tbody td{
+    padding:12px 14px;
+    border-bottom:1px solid var(--color-border);
+    font-size:14px;
+    vertical-align:middle;
+  }
+  tbody tr:hover{ background:#f9fafb; }
+  .col-actions{ text-align:right; white-space:nowrap; }
+  td.col-actions{ text-align:right; white-space:nowrap; }
+
+  .badge{
+    display:inline-block;
+    padding:3px 10px;
+    border-radius:999px;
+    font-size:12.5px;
+    font-weight:600;
+    white-space:nowrap;
+  }
+  .badge-success{ background:var(--color-success-bg); color:var(--color-success); }
+  .badge-warning{ background:var(--color-warning-bg); color:var(--color-warning); }
+  .badge-danger{ background:var(--color-danger-bg); color:var(--color-danger); }
+  .badge-neutral{ background:var(--color-neutral-bg); color:var(--color-text-muted); }
+
+  .icon-btn{
+    width:32px; height:32px;
+    display:inline-flex; align-items:center; justify-content:center;
+    border-radius:8px;
+    border:1px solid transparent;
+    background:transparent;
+    cursor:pointer;
+    color:var(--color-text-muted);
+    margin-left:4px;
+  }
+  .icon-btn svg{ width:17px; height:17px; }
+  .icon-btn--edit:hover{ background:#eaf6ff; color:#2563eb; border-color:#bfdbfe; }
+  .icon-btn--duplicate:hover{ background:#eefaf9; color:var(--color-primary-dark); border-color:#a7e5df; }
+  .icon-btn--delete:hover{ background:var(--color-danger-bg); color:var(--color-danger); border-color:#fecaca; }
+
+  #empty-state{ padding:28px; text-align:center; }
+
+  .modal-overlay{
+    position:fixed; inset:0;
+    background:rgba(15,23,42,.45);
+    display:flex; align-items:flex-start; justify-content:center;
+    padding:40px 16px;
+    overflow-y:auto;
+    z-index:100;
+  }
+  .modal-overlay[hidden]{ display:none; }
+  .modal{
+    background:var(--color-surface);
+    border-radius:var(--radius);
+    width:100%; max-width:720px;
+    box-shadow:0 10px 40px rgba(0,0,0,.25);
+  }
+  .modal-header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 22px;
+    border-bottom:1px solid var(--color-border);
+  }
+  .modal-header h2{ margin:0; font-size:17px; }
+  #item-form{ padding:6px 22px 22px; }
+  fieldset{
+    border:none;
+    border-top:1px solid var(--color-border);
+    padding:14px 0 4px;
+    margin:0 0 4px;
+  }
+  fieldset:first-child{ border-top:none; }
+  legend{
+    font-size:12.5px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.03em;
+    color:var(--color-primary-dark);
+    padding:0;
+    margin-bottom:8px;
+  }
+  .field-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px 16px;
+  }
+  .field{ display:flex; flex-direction:column; gap:4px; }
+  .field.full{ grid-column:1 / -1; }
+  .field label{ font-size:12.5px; font-weight:600; color:var(--color-text-muted); }
+  .field input, .field select{
+    padding:8px 10px;
+    border:1px solid var(--color-border);
+    border-radius:7px;
+    background:#fff;
+  }
+  .modal-footer{
+    display:flex; justify-content:flex-end; gap:10px;
+    margin-top:18px; padding-top:16px; border-top:1px solid var(--color-border);
+  }
+
+  .toast{
+    position:fixed; left:50%; bottom:24px; transform:translateX(-50%);
+    background:#111827; color:#fff;
+    padding:11px 20px; border-radius:8px;
+    box-shadow:0 6px 20px rgba(0,0,0,.25);
+    font-size:14px;
+    z-index:200;
+  }
+  .toast.error{ background:#7f1d1d; }
+  .toast[hidden]{ display:none; }
+
+  @media (max-width:640px){
+    .field-grid{ grid-template-columns:1fr; }
+    main{ padding:14px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <h1>Conciliação Pix</h1>
+  <nav class="tabs">
+    <button type="button" class="tab-btn active" data-view="upload">Importar planilha</button>
+    <button type="button" class="tab-btn" data-view="list">Lista de itens</button>
+  </nav>
+</header>
+
+<main>
+  <!-- TELA 1: UPLOAD -->
+  <section id="view-upload" class="view">
+    <div class="card">
+      <h2>Importar planilha (.xlsx)</h2>
+      <p class="muted">Selecione o relatório Pix. As colunas da planilha devem ter os mesmos nomes usados no seu arquivo (Fornecedor, OS, Status, Valor Total, etc.) — a ordem das colunas não importa.</p>
+      <label class="dropzone" id="dropzone" for="file-input">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 16V4"></path><path d="M6 10l6-6 6 6"></path>
+          <path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"></path>
+        </svg>
+        <span id="dropzone-text">Clique para escolher o arquivo ou arraste aqui</span>
+        <input type="file" id="file-input" accept=".xlsx,.xls" hidden />
+      </label>
+
+      <div id="upload-preview" hidden>
+        <p><strong id="preview-count"></strong></p>
+        <p id="preview-unmatched" class="muted small"></p>
+        <div class="upload-actions">
+          <button type="button" class="btn btn-secondary" id="btn-cancel-upload">Cancelar</button>
+          <button type="button" class="btn btn-primary" id="btn-confirm-upload">Confirmar importação</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="muted" style="margin:0;">Já importou antes? <button type="button" class="link-btn" id="btn-go-list">Ver lista de itens</button></p>
+    </div>
+  </section>
+
+  <!-- TELA 2: LISTA -->
+  <section id="view-list" class="view" hidden>
+    <div class="list-toolbar">
+      <input type="search" id="search-input" placeholder="Buscar por fornecedor, cliente, OS, status..." />
+      <div class="toolbar-actions">
+        <button type="button" class="btn btn-secondary" id="btn-import-more">Importar planilha</button>
+        <button type="button" class="btn btn-primary" id="btn-new-item">+ Novo item</button>
+      </div>
+    </div>
+
+    <div class="table-wrap card">
+      <table id="items-table">
+        <thead>
+          <tr>
+            <th>OS</th>
+            <th>Fornecedor</th>
+            <th>Cliente</th>
+            <th>Tipo de Serviço</th>
+            <th>Valor Total</th>
+            <th>Status</th>
+            <th>Data de Criação</th>
+            <th class="col-actions">Ações</th>
+          </tr>
+        </thead>
+        <tbody id="items-tbody"></tbody>
+      </table>
+      <p id="empty-state" class="muted" hidden>Nenhum item cadastrado ainda. Importe uma planilha ou adicione um item manualmente.</p>
+    </div>
+  </section>
+</main>
+
+<!-- MODAL DE EDIÇÃO / NOVO ITEM -->
+<div id="modal-overlay" class="modal-overlay" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-header">
+      <h2 id="modal-title">Editar item</h2>
+      <button type="button" class="icon-btn" id="btn-close-modal" aria-label="Fechar">✕</button>
+    </div>
+    <form id="item-form">
+      <div id="modal-sections"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="btn-cancel-modal">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="toast" class="toast" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+/* =========================================================
+   CONFIGURAÇÃO DOS CAMPOS
+   Tem que bater com FIELD_KEYS do Code.gs (mesmas "key").
+   ========================================================= */
+var FIELDS = [
+  { key:'fornecedor', label:'Fornecedor', type:'text', section:'ident' },
+  { key:'os', label:'OS', type:'text', section:'ident' },
+  { key:'obt', label:'Obt', type:'text', section:'ident' },
+  { key:'idPedido', label:'ID', type:'text', section:'ident' },
+  { key:'departamento', label:'Departamento', type:'text', section:'ident' },
+  { key:'tipoServico', label:'Tipo de Serviço', type:'text', section:'ident' },
+
+  { key:'status', label:'Status', type:'datalist', options:['Pendente','Em Análise','Aprovado','Reprovado','Pago','Concluído','Cancelado'], section:'aprov' },
+  { key:'aprovador', label:'Aprovador', type:'text', section:'aprov' },
+  { key:'dataCriacao', label:'Data de Criação', type:'date', section:'aprov' },
+  { key:'dataAprovacao', label:'Data de Aprovação', type:'date', section:'aprov' },
+  { key:'consultorSolicitante', label:'Consultor Solicitante', type:'text', section:'aprov' },
+  { key:'emissorPedido', label:'Emissor do Pedido', type:'text', section:'aprov' },
+
+  { key:'cliente', label:'Cliente', type:'text', section:'cliente' },
+  { key:'cnpjCpf', label:'CNPJ/CPF', type:'text', section:'cliente' },
+
+  { key:'instituicao', label:'Instituição', type:'text', section:'pix' },
+  { key:'agencia', label:'Agência', type:'text', section:'pix' },
+  { key:'contaCorrente', label:'Conta Corrente', type:'text', section:'pix' },
+  { key:'chavePixDigitada', label:'Chave Pix Foi Digitada?', type:'select', options:['Sim','Não'], section:'pix' },
+  { key:'tipoChavePix', label:'Tipo de Chave Pix', type:'datalist', options:['CPF/CNPJ','E-mail','Telefone','Aleatória'], section:'pix' },
+  { key:'chavePix', label:'Chave Pix', type:'text', section:'pix' },
+
+  { key:'descricaoPagamento', label:'Descrição do Pagamento', type:'text', section:'pagamento' },
+  { key:'valorTotal', label:'Valor Total', type:'number', section:'pagamento' }
+];
+
+var SECTIONS = [
+  { id:'ident', title:'Identificação e Processo' },
+  { id:'aprov', title:'Fluxo de Aprovação' },
+  { id:'cliente', title:'Cliente' },
+  { id:'pix', title:'Dados Bancários e Pix' },
+  { id:'pagamento', title:'Pagamento' }
+];
+
+var FIELDS_BY_KEY = {};
+FIELDS.forEach(function(f){ FIELDS_BY_KEY[f.key] = f; });
+
+var LABEL_TO_KEY = {};
+FIELDS.forEach(function(f){ LABEL_TO_KEY[normalizeHeader(f.label)] = f.key; });
+
+/* =========================================================
+   ÍCONES (editar / duplicar / excluir)
+   ========================================================= */
+var ICON_EDIT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>';
+var ICON_DUPLICATE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h10"></path></svg>';
+var ICON_DELETE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path></svg>';
+
+/* =========================================================
+   ESTADO
+   ========================================================= */
+var allItems = [];
+var editingRowId = null; // null = criando novo item
+
+/* =========================================================
+   HELPERS DE TEXTO / FORMATO
+   ========================================================= */
+var DIACRITICS_REGEX = new RegExp(String.fromCharCode(91) + String.fromCharCode(0x0300) + '-' + String.fromCharCode(0x036f) + String.fromCharCode(93), 'g');
+function normalizeHeader(str){
+  return String(str || '')
+    .normalize('NFD').replace(DIACRITICS_REGEX, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g,'');
+}
+
+function parseValorBR(raw){
+  if (raw === null || raw === undefined || raw === '') return '';
+  if (typeof raw === 'number') return raw;
+  var s = String(raw).replace(/[^\d,.-]/g,'').trim();
+  if (s.indexOf(',') > -1) s = s.replace(/\./g,'').replace(',', '.');
+  var n = parseFloat(s);
+  return isNaN(n) ? '' : n;
+}
+
+function toISODate(raw){
+  if (!raw) return '';
+  if (Object.prototype.toString.call(raw) === '[object Date]') {
+    var y = raw.getFullYear(), m = String(raw.getMonth()+1).padStart(2,'0'), d = String(raw.getDate()).padStart(2,'0');
+    return y + '-' + m + '-' + d;
+  }
+  var s = String(raw).trim();
+  var m1 = s.match(/^(\d{2})\/(\d{2})\/(\d{4})/);
+  if (m1) return m1[3] + '-' + m1[2] + '-' + m1[1];
+  var m2 = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (m2) return m2[0];
+  return s;
+}
+
+function formatDateBR(value){
+  if (!value) return '';
+  if (Object.prototype.toString.call(value) === '[object Date]') {
+    return value.toLocaleDateString('pt-BR');
+  }
+  var s = String(value);
+  var m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (m) return m[3] + '/' + m[2] + '/' + m[1];
+  return s;
+}
+
+function toDateInputValue(value){
+  if (!value) return '';
+  if (Object.prototype.toString.call(value) === '[object Date]') {
+    var y = value.getFullYear(), m = String(value.getMonth()+1).padStart(2,'0'), d = String(value.getDate()).padStart(2,'0');
+    return y + '-' + m + '-' + d;
+  }
+  var s = String(value);
+  var m2 = s.match(/^(\d{4}-\d{2}-\d{2})/);
+  return m2 ? m2[1] : '';
+}
+
+function formatCurrencyBRL(value){
+  var n = typeof value === 'number' ? value : parseFloat(value);
+  if (isNaN(n)) return value || '';
+  return n.toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
+}
+
+function statusBadgeClass(status){
+  var s = normalizeHeader(status);
+  if (['aprovado','pago','concluido'].indexOf(s) > -1) return 'badge-success';
+  if (['reprovado','cancelado'].indexOf(s) > -1) return 'badge-danger';
+  if (['pendente','emanalise'].indexOf(s) > -1) return 'badge-warning';
+  return 'badge-neutral';
+}
+
+/* =========================================================
+   NAVEGAÇÃO ENTRE TELAS
+   ========================================================= */
+function showView(name){
+  document.getElementById('view-upload').hidden = name !== 'upload';
+  document.getElementById('view-list').hidden = name !== 'list';
+  document.querySelectorAll('.tab-btn').forEach(function(btn){
+    btn.classList.toggle('active', btn.dataset.view === name);
+  });
+  if (name === 'list') loadItems();
+}
+
+document.querySelectorAll('.tab-btn').forEach(function(btn){
+  btn.addEventListener('click', function(){ showView(btn.dataset.view); });
+});
+document.getElementById('btn-go-list').addEventListener('click', function(){ showView('list'); });
+document.getElementById('btn-import-more').addEventListener('click', function(){ showView('upload'); });
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+var toastTimer = null;
+function toast(message, type){
+  var el = document.getElementById('toast');
+  el.textContent = message;
+  el.className = 'toast' + (type === 'error' ? ' error' : '');
+  el.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ el.hidden = true; }, 3500);
+}
+
+function showError(err){
+  console.error(err);
+  toast((err && err.message) ? err.message : 'Ocorreu um erro. Tente novamente.', 'error');
+}
+
+/* =========================================================
+   UPLOAD / IMPORTAÇÃO
+   ========================================================= */
+var dropzone = document.getElementById('dropzone');
+var fileInput = document.getElementById('file-input');
+var pendingImportItems = [];
+
+['dragenter','dragover'].forEach(function(evt){
+  dropzone.addEventListener(evt, function(e){
+    e.preventDefault(); e.stopPropagation();
+    dropzone.classList.add('dragover');
+  });
+});
+['dragleave','drop'].forEach(function(evt){
+  dropzone.addEventListener(evt, function(e){
+    e.preventDefault(); e.stopPropagation();
+    dropzone.classList.remove('dragover');
+  });
+});
+dropzone.addEventListener('drop', function(e){
+  var file = e.dataTransfer.files && e.dataTransfer.files[0];
+  if (file) handleFile(file);
+});
+fileInput.addEventListener('change', function(e){
+  var file = e.target.files && e.target.files[0];
+  if (file) handleFile(file);
+});
+
+function handleFile(file){
+  document.getElementById('dropzone-text').textContent = 'Lendo "' + file.name + '"...';
+  var reader = new FileReader();
+  reader.onload = function(e){
+    try {
+      var data = new Uint8Array(e.target.result);
+      var workbook = XLSX.read(data, { type:'array', cellDates:true });
+      var firstSheetName = workbook.SheetNames[0];
+      var worksheet = workbook.Sheets[firstSheetName];
+      var rawRows = XLSX.utils.sheet_to_json(worksheet, { defval:'' });
+
+      if (!rawRows.length) {
+        toast('Não encontrei linhas de dados nessa planilha.', 'error');
+        resetDropzone();
+        return;
+      }
+
+      var unmatchedHeaders = {};
+      Object.keys(rawRows[0]).forEach(function(header){
+        if (!LABEL_TO_KEY[normalizeHeader(header)]) unmatchedHeaders[header] = true;
+      });
+
+      pendingImportItems = rawRows.map(mapRawRowToItem);
+
+      document.getElementById('preview-count').textContent =
+        pendingImportItems.length + ' linha(s) encontrada(s) e prontas para importar.';
+      var unmatchedList = Object.keys(unmatchedHeaders);
+      document.getElementById('preview-unmatched').textContent = unmatchedList.length
+        ? 'Colunas não reconhecidas (serão ignoradas): ' + unmatchedList.join(', ')
+        : 'Todas as colunas foram reconhecidas.';
+      document.getElementById('upload-preview').hidden = false;
+      document.getElementById('dropzone-text').textContent = 'Arquivo "' + file.name + '" carregado.';
+    } catch (err) {
+      showError(err);
+      resetDropzone();
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function mapRawRowToItem(raw){
+  var item = {};
+  Object.keys(raw).forEach(function(header){
+    var key = LABEL_TO_KEY[normalizeHeader(header)];
+    if (!key) return;
+    var field = FIELDS_BY_KEY[key];
+    var value = raw[header];
+    if (field.type === 'number') value = parseValorBR(value);
+    else if (field.type === 'date') value = toISODate(value);
+    else value = (value === null || value === undefined) ? '' : String(value).trim();
+    item[key] = value;
+  });
+  return item;
+}
+
+function resetDropzone(){
+  fileInput.value = '';
+  pendingImportItems = [];
+  document.getElementById('dropzone-text').textContent = 'Clique para escolher o arquivo ou arraste aqui';
+  document.getElementById('upload-preview').hidden = true;
+}
+
+document.getElementById('btn-cancel-upload').addEventListener('click', resetDropzone);
+
+document.getElementById('btn-confirm-upload').addEventListener('click', function(){
+  if (!pendingImportItems.length) return;
+  var btn = document.getElementById('btn-confirm-upload');
+  btn.disabled = true;
+  btn.textContent = 'Importando...';
+  google.script.run
+    .withSuccessHandler(function(data){
+      btn.disabled = false;
+      btn.textContent = 'Confirmar importação';
+      allItems = data;
+      toast('Planilha importada com sucesso!');
+      resetDropzone();
+      showView('list');
+      renderTable(applyFilter(allItems));
+    })
+    .withFailureHandler(function(err){
+      btn.disabled = false;
+      btn.textContent = 'Confirmar importação';
+      showError(err);
+    })
+    .importItems(pendingImportItems);
+});
+
+/* =========================================================
+   LISTA DE ITENS
+   ========================================================= */
+function loadItems(){
+  var tbody = document.getElementById('items-tbody');
+  tbody.innerHTML = '';
+  document.getElementById('empty-state').hidden = true;
+  google.script.run
+    .withSuccessHandler(function(data){
+      allItems = data;
+      renderTable(applyFilter(allItems));
+    })
+    .withFailureHandler(showError)
+    .getItems();
+}
+
+document.getElementById('search-input').addEventListener('input', function(){
+  renderTable(applyFilter(allItems));
+});
+
+function applyFilter(items){
+  var term = normalizeHeader(document.getElementById('search-input').value);
+  if (!term) return items;
+  return items.filter(function(item){
+    var haystack = normalizeHeader(
+      [item.fornecedor, item.cliente, item.os, item.status, item.descricaoPagamento, item.consultorSolicitante].join(' ')
+    );
+    return haystack.indexOf(term) > -1;
+  });
+}
+
+function renderTable(items){
+  var tbody = document.getElementById('items-tbody');
+  tbody.innerHTML = '';
+  document.getElementById('empty-state').hidden = items.length > 0;
+
+  items.forEach(function(item){
+    var tr = document.createElement('tr');
+
+    tr.appendChild(makeCell(item.os));
+    tr.appendChild(makeCell(item.fornecedor));
+    tr.appendChild(makeCell(item.cliente));
+    tr.appendChild(makeCell(item.tipoServico));
+    tr.appendChild(makeCell(formatCurrencyBRL(item.valorTotal)));
+
+    var statusTd = document.createElement('td');
+    var badge = document.createElement('span');
+    badge.className = 'badge ' + statusBadgeClass(item.status);
+    badge.textContent = item.status || '—';
+    statusTd.appendChild(badge);
+    tr.appendChild(statusTd);
+
+    tr.appendChild(makeCell(formatDateBR(item.dataCriacao)));
+
+    var actionsTd = document.createElement('td');
+    actionsTd.className = 'col-actions';
+    actionsTd.appendChild(makeIconButton('edit', 'Editar', ICON_EDIT, item.rowId));
+    actionsTd.appendChild(makeIconButton('duplicate', 'Duplicar', ICON_DUPLICATE, item.rowId));
+    actionsTd.appendChild(makeIconButton('delete', 'Excluir', ICON_DELETE, item.rowId));
+    tr.appendChild(actionsTd);
+
+    tbody.appendChild(tr);
+  });
+}
+
+function makeCell(text){
+  var td = document.createElement('td');
+  td.textContent = (text === null || text === undefined || text === '') ? '—' : text;
+  return td;
+}
+
+function makeIconButton(action, label, iconSvg, rowId){
+  var btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'icon-btn icon-btn--' + action;
+  btn.title = label;
+  btn.setAttribute('aria-label', label + ' item');
+  btn.innerHTML = iconSvg;
+  btn.addEventListener('click', function(){ handleAction(action, rowId); });
+  return btn;
+}
+
+function handleAction(action, rowId){
+  var item = allItems.find(function(i){ return i.rowId === rowId; });
+  if (!item) return;
+  if (action === 'edit') openModal('edit', item);
+  else if (action === 'duplicate') doDuplicate(rowId);
+  else if (action === 'delete') doDelete(rowId);
+}
+
+function doDuplicate(rowId){
+  google.script.run
+    .withSuccessHandler(function(data){
+      allItems = data;
+      renderTable(applyFilter(allItems));
+      toast('Item duplicado.');
+    })
+    .withFailureHandler(showError)
+    .duplicateItem(rowId);
+}
+
+function doDelete(rowId){
+  if (!confirm('Tem certeza que deseja excluir este item? Essa ação não pode ser desfeita.')) return;
+  google.script.run
+    .withSuccessHandler(function(data){
+      allItems = data;
+      renderTable(applyFilter(allItems));
+      toast('Item excluído.');
+    })
+    .withFailureHandler(showError)
+    .deleteItem(rowId);
+}
+
+document.getElementById('btn-new-item').addEventListener('click', function(){
+  openModal('new', {});
+});
+
+/* =========================================================
+   MODAL (editar / novo item)
+   ========================================================= */
+var fieldInputs = {};
+
+function buildModalForm(){
+  var container = document.getElementById('modal-sections');
+  container.innerHTML = '';
+  SECTIONS.forEach(function(section){
+    var fieldset = document.createElement('fieldset');
+    var legend = document.createElement('legend');
+    legend.textContent = section.title;
+    fieldset.appendChild(legend);
+
+    var grid = document.createElement('div');
+    grid.className = 'field-grid';
+
+    FIELDS.filter(function(f){ return f.section === section.id; }).forEach(function(field){
+      var wrap = document.createElement('div');
+      wrap.className = 'field' + (field.type === 'text' && field.key === 'descricaoPagamento' ? ' full' : '');
+
+      var label = document.createElement('label');
+      label.setAttribute('for', 'field-' + field.key);
+      label.textContent = field.label;
+      wrap.appendChild(label);
+
+      var input;
+      if (field.type === 'select') {
+        input = document.createElement('select');
+        field.options.forEach(function(opt){
+          var o = document.createElement('option');
+          o.value = opt; o.textContent = opt;
+          input.appendChild(o);
+        });
+      } else if (field.type === 'datalist') {
+        input = document.createElement('input');
+        input.type = 'text';
+        input.setAttribute('list', 'datalist-' + field.key);
+        var dl = document.createElement('datalist');
+        dl.id = 'datalist-' + field.key;
+        field.options.forEach(function(opt){
+          var o = document.createElement('option');
+          o.value = opt;
+          dl.appendChild(o);
+        });
+        wrap.appendChild(dl);
+      } else if (field.type === 'number') {
+        input = document.createElement('input');
+        input.type = 'number';
+        input.step = '0.01';
+      } else if (field.type === 'date') {
+        input = document.createElement('input');
+        input.type = 'date';
+      } else {
+        input = document.createElement('input');
+        input.type = 'text';
+      }
+      input.id = 'field-' + field.key;
+      input.name = field.key;
+      wrap.appendChild(input);
+      grid.appendChild(wrap);
+      fieldInputs[field.key] = input;
+    });
+
+    fieldset.appendChild(grid);
+    container.appendChild(fieldset);
+  });
+}
+buildModalForm();
+
+function openModal(mode, item){
+  editingRowId = mode === 'edit' ? item.rowId : null;
+  document.getElementById('modal-title').textContent = mode === 'edit' ? 'Editar item' : 'Novo item';
+
+  FIELDS.forEach(function(field){
+    var input = fieldInputs[field.key];
+    var value = item[field.key];
+    if (field.type === 'date') input.value = toDateInputValue(value);
+    else if (field.type === 'select') input.value = value || field.options[0];
+    else input.value = (value === undefined || value === null) ? '' : value;
+  });
+
+  document.getElementById('modal-overlay').hidden = false;
+}
+
+function closeModal(){
+  document.getElementById('modal-overlay').hidden = true;
+  editingRowId = null;
+}
+
+document.getElementById('btn-close-modal').addEventListener('click', closeModal);
+document.getElementById('btn-cancel-modal').addEventListener('click', closeModal);
+document.getElementById('modal-overlay').addEventListener('click', function(e){
+  if (e.target === this) closeModal();
+});
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape' && !document.getElementById('modal-overlay').hidden) closeModal();
+});
+
+document.getElementById('item-form').addEventListener('submit', function(e){
+  e.preventDefault();
+  var item = {};
+  FIELDS.forEach(function(field){
+    var raw = fieldInputs[field.key].value;
+    if (field.type === 'number') item[field.key] = raw === '' ? '' : parseFloat(raw);
+    else item[field.key] = raw;
+  });
+
+  var submitBtn = e.target.querySelector('button[type="submit"]');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Salvando...';
+
+  var onDone = function(data){
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Salvar';
+    allItems = data;
+    renderTable(applyFilter(allItems));
+    closeModal();
+    toast('Item salvo com sucesso!');
+  };
+  var onFail = function(err){
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Salvar';
+    showError(err);
+  };
+
+  if (editingRowId) {
+    google.script.run.withSuccessHandler(onDone).withFailureHandler(onFail).updateItem(editingRowId, item);
+  } else {
+    google.script.run.withSuccessHandler(onDone).withFailureHandler(onFail).addItem(item);
+  }
+});
+</script>
+</body>
+</html>
