@@ -36,12 +36,13 @@
           <div class="upload-card"><div id="dropzone" class="dropzone"><input id="fileInput" type="file" accept=".xlsx,.xls,.csv"><div class="upload-icon"><svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 15v4h14v-4"/></svg></div><h3 id="fileTitle">Arraste sua planilha aqui</h3><p id="fileText">ou clique para selecionar um arquivo</p><button class="select-btn" type="button">Selecionar arquivo</button><small>Formatos aceitos: XLSX, XLS e CSV • Máximo 10 MB</small></div><div id="message" class="message"></div></div>
           <aside class="columns-card"><div class="columns-head"><span class="check">✓</span><div><h3>Colunas esperadas</h3><p>12 campos obrigatórios</p></div></div><ul id="columnList"></ul></aside>
         </div>
-        <section id="preview" class="preview-card"><div class="preview-head"><h3>Prévia dos dados extraídos</h3><span id="rowCount"></span></div><div class="table-wrap"><table><thead id="tableHead"></thead><tbody id="tableBody"></tbody></table></div><div class="actions"><p>A conexão com o Google Sheets será configurada na próxima etapa.</p><button id="sendButton" class="send-btn" disabled>Enviar ao Google Sheets →</button></div></section>
+        <section id="preview" class="preview-card"><div class="preview-head"><h3>Prévia dos dados extraídos</h3><span id="rowCount"></span></div><div class="table-wrap"><table><thead id="tableHead"></thead><tbody id="tableBody"></tbody></table></div><div class="actions"><p>Destino: aba Conciliação PIX no Google Sheets.</p><button id="sendButton" class="send-btn" disabled>Enviar ao Google Sheets →</button></div></section>
       </section>
       <footer class="footer"><span>Smartoperations • Conciliação PIX</span><span>v1.0.0</span></footer>
     </main>
   </div>
   <script>
+    const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbz9yjkk4szt3_qU7YD_I2lsCdy15AjZjoL9o2Jkudy8KB_2EVozqQX1izImvjUE-aDmrA/exec";
     const REQUIRED_COLUMNS=["Fornecedor","OS","ID","Status","Aprovador","Data de Criação","Data de Aprovação","Cliente","Consultor Solicitante","Departamento","Tipo de Serviço","Valor Total"];
     const columnList=document.getElementById("columnList");
     REQUIRED_COLUMNS.forEach((name,index)=>columnList.insertAdjacentHTML("beforeend",`<li><b>${index+1}</b>${name}<i>✓</i></li>`));
@@ -50,7 +51,7 @@
     if(savedTheme==="dark")document.body.classList.add("dark");
     themeButton.addEventListener("click",()=>{document.body.classList.toggle("dark");localStorage.setItem("pix-theme",document.body.classList.contains("dark")?"dark":"light")});
     document.querySelectorAll(".menu button").forEach(button=>button.addEventListener("click",()=>{document.querySelectorAll(".menu button").forEach(item=>item.classList.remove("active"));button.classList.add("active")}));
-    const dropzone=document.getElementById("dropzone"),fileInput=document.getElementById("fileInput"),message=document.getElementById("message"),preview=document.getElementById("preview");
+    const dropzone=document.getElementById("dropzone"),fileInput=document.getElementById("fileInput"),message=document.getElementById("message"),preview=document.getElementById("preview"),sendButton=document.getElementById("sendButton");
     dropzone.addEventListener("click",event=>{if(!event.target.closest("input"))fileInput.click()});
     ["dragenter","dragover"].forEach(type=>dropzone.addEventListener(type,event=>{event.preventDefault();dropzone.classList.add("drag")}));
     ["dragleave","drop"].forEach(type=>dropzone.addEventListener(type,event=>{event.preventDefault();dropzone.classList.remove("drag")}));
@@ -60,6 +61,7 @@
     function showMessage(text,type){message.textContent=text;message.className=`message show ${type}`}
     function processFile(file){
       preview.classList.remove("show");
+      sendButton.disabled=true;window.pixRows=[];window.pixSourceFile="";
       if(!file)return;
       if(file.size>10*1024*1024)return showMessage("O arquivo ultrapassa o limite de 10 MB.","error");
       if(!/\.(xlsx|xls|csv)$/i.test(file.name))return showMessage("Formato inválido. Envie um arquivo XLSX, XLS ou CSV.","error");
@@ -81,7 +83,7 @@
           if(missing.length)throw new Error(`Colunas não encontradas: ${missing.join(", ")}.`);
           const dataRows=matrix.slice(headerIndex+1).filter(row=>REQUIRED_COLUMNS.some(column=>String(row[headerMap[normalize(column)]]??"").trim()!==""));
           const selected=dataRows.map(row=>Object.fromEntries(REQUIRED_COLUMNS.map(column=>[column,row[headerMap[normalize(column)]] ?? ""])));
-          renderPreview(selected);window.pixRows=selected;document.getElementById("fileText").textContent=`${selected.length} registros válidos encontrados`;showMessage(`Planilha validada. Cabeçalho localizado na linha ${headerIndex+1}; somente as 12 colunas necessárias serão utilizadas.`,"success");
+          renderPreview(selected);window.pixRows=selected;window.pixSourceFile=file.name;sendButton.disabled=false;document.getElementById("fileText").textContent=`${selected.length} registros válidos encontrados`;showMessage(`Planilha validada. Cabeçalho localizado na linha ${headerIndex+1}; somente as 12 colunas necessárias serão utilizadas.`,"success");
         }catch(error){showMessage(error.message||"Não foi possível ler a planilha.","error")}
       };
       reader.readAsArrayBuffer(file);
@@ -93,6 +95,17 @@
       preview.classList.add("show");
     }
     function escapeHtml(value){const div=document.createElement("div");div.textContent=String(value??"");return div.innerHTML}
+    sendButton.addEventListener("click",async()=>{
+      if(!Array.isArray(window.pixRows)||!window.pixRows.length)return showMessage("Selecione e valide uma planilha antes de enviar.","error");
+      const originalLabel=sendButton.textContent;sendButton.disabled=true;sendButton.textContent="Enviando registros...";
+      try{
+        await fetch(APPS_SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action:"import",sourceFile:window.pixSourceFile,rows:window.pixRows})});
+        showMessage(`${window.pixRows.length} registros enviados ao Google Sheets. Confira a aba Conciliação PIX.`,"success");
+        sendButton.textContent="Enviado com sucesso ✓";
+      }catch(error){
+        console.error(error);showMessage("Não foi possível enviar os registros. Verifique a implantação do Apps Script e tente novamente.","error");sendButton.disabled=false;sendButton.textContent=originalLabel;
+      }
+    });
   </script>
 </body>
 </html>
