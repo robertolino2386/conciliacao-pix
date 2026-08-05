@@ -987,7 +987,7 @@
 
       <footer class="footer">
         <span>Smartoperations • Conciliação PIX</span>
-        <span>v2.2.0</span>
+        <span id="versionInfo">Front v2.3.0 • API verificando...</span>
       </footer>
     </main>
   </div>
@@ -1039,6 +1039,7 @@
     ];
 
     const RECORDS_PER_PAGE=10;
+    const EXPECTED_API_VERSION="2.3.0";
 
     let records=[];
     let filtered=[];
@@ -1092,6 +1093,54 @@
       );
     });
 
+    function checkApiVersion(){
+      const callback=`pixVersion_${Date.now()}`;
+      const script=document.createElement("script");
+      const versionInfo=document.getElementById("versionInfo");
+
+      const timeout=setTimeout(()=>{
+        cleanup();
+        versionInfo.textContent=`Front v2.3.0 • API não verificada`;
+        versionInfo.title="Não foi possível confirmar a versão publicada do Apps Script.";
+      },10000);
+
+      function cleanup(){
+        clearTimeout(timeout);
+        delete window[callback];
+        script.remove();
+      }
+
+      window[callback]=data=>{
+        cleanup();
+
+        const apiVersion=String(data&&data.version?data.version:"desconhecida");
+        const compatible=apiVersion===EXPECTED_API_VERSION;
+
+        versionInfo.textContent=
+          `Front v2.3.0 • API v${apiVersion}`;
+
+        versionInfo.title=compatible
+          ? "Frontend e Apps Script estão na versão esperada."
+          : `A página espera a API ${EXPECTED_API_VERSION}, mas recebeu ${apiVersion}.`;
+
+        if(!compatible){
+          showToast(
+            `Atenção: o Apps Script publicado está na versão ${apiVersion}; esperada ${EXPECTED_API_VERSION}.`,
+            true
+          );
+        }
+      };
+
+      script.onerror=()=>{
+        cleanup();
+        versionInfo.textContent="Front v2.3.0 • API indisponível";
+        versionInfo.title="Falha ao consultar a versão do Apps Script.";
+      };
+
+      script.src=`${API_URL}?callback=${callback}&_=${Date.now()}`;
+      document.body.appendChild(script);
+    }
+
     function loadRecords(){
       tableContainer.innerHTML='<div class="loading">Carregando registros do Google Sheets...</div>';
       pagination.innerHTML="";
@@ -1101,7 +1150,7 @@
 
       const timeout=setTimeout(()=>{
         cleanup();
-        showLoadError("A consulta demorou demais. Verifique a implantação 2.0.0 do Apps Script.");
+        showLoadError("A consulta demorou demais. Verifique se a implantação 2.3.0 do Apps Script foi publicada.");
       },15000);
 
       function cleanup(){
@@ -1743,6 +1792,7 @@
       return escapeHtml(value).replace(/"/g,"&quot;");
     }
 
+    checkApiVersion();
     loadRecords();
   </script>
 </body>
