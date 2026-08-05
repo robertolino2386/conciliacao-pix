@@ -6,71 +6,1617 @@
   <meta name="description" content="Gestão dos registros da Conciliação PIX Copastur">
   <title>Conciliação PIX - Copastur | Conciliação</title>
   <style>
-    :root{--primary:#00a99d;--primary-dark:#007d86;--navy:#063e52;--text:#183744;--muted:#75858d;--border:#dfe8e9;--page:#f3f8f8;--card:#fff;--soft:#e8f7f4;--danger:#d55353;--shadow:0 12px 35px rgba(13,64,75,.08)}
-    *{box-sizing:border-box}body{margin:0;font-family:Inter,"Segoe UI",Arial,sans-serif;background:var(--page);color:var(--text)}button,input{font:inherit}.app{display:grid;grid-template-columns:250px 1fr;min-height:100vh}.sidebar{position:sticky;top:0;height:100vh;padding:26px 18px 20px;background:linear-gradient(170deg,#073e53 0%,#00636d 62%,#00837d 100%);color:#fff;display:flex;flex-direction:column;box-shadow:8px 0 24px #073e531f;z-index:5}.brand{display:flex;gap:12px;align-items:center;padding:0 8px 25px;border-bottom:1px solid #ffffff24}.brand img{width:44px;height:44px;object-fit:contain;border-radius:12px;background:#ffffff12;padding:5px}.brand strong,.brand small{display:block}.brand strong{font-size:16px}.brand small{font-size:9px;letter-spacing:1.7px;color:#9bdad7;margin-top:5px}.menu{margin-top:27px}.menu>span{display:block;font-size:9px;letter-spacing:1.8px;color:#80c7c8;margin:0 12px 12px}.menu a{width:100%;height:46px;border-radius:10px;color:#c5dee0;display:flex;align-items:center;gap:12px;padding:0 14px;margin:4px 0;text-decoration:none;font-size:13px}.menu a svg{width:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.menu a:hover{background:#ffffff12;color:#fff}.menu a.active{background:linear-gradient(90deg,#08a99e,#00a395a8);color:#fff;box-shadow:0 7px 18px #003e4759}.menu .badge{margin-left:auto;width:19px;height:19px;border-radius:50%;background:#ff6c6c;display:grid;place-items:center;font-size:9px}.side-bottom{margin-top:auto}.theme-switch{border:1px solid #ffffff2b;background:#003c4b8a;color:#ddf1f1;width:100%;height:43px;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer}.toggle{width:34px;height:18px;border-radius:20px;background:#082f3e;padding:3px}.toggle i{display:block;width:12px;height:12px;border-radius:50%;background:#0fc0af;transition:.2s}.copastur{border-top:1px solid #ffffff22;margin-top:17px;padding-top:18px;display:flex;align-items:center;justify-content:center}.copastur img{max-width:128px;max-height:42px;object-fit:contain}.main{min-width:0;display:flex;flex-direction:column}.topbar{height:108px;background:var(--card);border-bottom:1px solid var(--border);padding:22px 40px;display:flex;justify-content:space-between;align-items:center}.eyebrow{font-size:9px;font-weight:800;letter-spacing:2px;color:var(--primary);margin:0 0 6px}.topbar h1{font-size:25px;letter-spacing:-.5px;margin:0}.topbar h1 span{font-weight:400}.subtitle{font-size:11px;color:var(--muted);margin:5px 0 0}.avatar{width:39px;height:39px;border-radius:12px;background:var(--navy);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:800}.content{width:100%;padding:28px 40px;max-width:1600px;margin:0 auto}.page-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:20px}.page-head h2{font-size:21px;margin:0 0 5px}.page-head p{font-size:12px;color:var(--muted);margin:0}.refresh{border:1px solid var(--border);background:var(--card);color:var(--primary-dark);height:39px;border-radius:9px;padding:0 15px;font-size:11px;font-weight:700;cursor:pointer}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:20px}.stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow);display:flex;align-items:center;gap:13px}.stat-icon{width:39px;height:39px;border-radius:11px;background:var(--soft);color:var(--primary);display:grid;place-items:center;font-size:17px}.stat small{display:block;font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px}.stat strong{font-size:20px}.panel{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}.toolbar{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:15px}.search{position:relative;max-width:390px;width:100%}.search span{position:absolute;left:12px;top:10px;color:var(--muted)}.search input{width:100%;height:38px;border:1px solid var(--border);background:var(--page);color:var(--text);border-radius:9px;padding:0 12px 0 34px;outline:none;font-size:11px}.search input:focus{border-color:var(--primary)}.counter{font-size:10px;color:var(--muted)}.table-wrap{overflow:auto;max-height:calc(100vh - 365px);min-height:300px}table{border-collapse:collapse;width:100%;white-space:nowrap;font-size:10px}th,td{padding:11px 12px;border-bottom:1px solid var(--border);text-align:left}th{position:sticky;top:0;background:var(--soft);z-index:2;color:var(--primary-dark);font-size:9px;text-transform:uppercase;letter-spacing:.4px}tbody tr:hover{background:color-mix(in srgb,var(--soft) 45%,transparent)}td:first-child{position:sticky;left:0;background:var(--card);z-index:1}th:first-child{left:0;z-index:3}.status{display:inline-flex;padding:4px 8px;border-radius:20px;font-size:9px;font-weight:750}.status.aprovado{background:#e3f5ef;color:#247b66}.status.reprovado{background:#ffeded;color:#aa4343}.status.outro{background:#fff5d9;color:#927121}.row-actions{display:flex;gap:6px}.action-btn{height:29px;border-radius:7px;padding:0 9px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:9px;font-weight:700;cursor:pointer}.action-btn.edit{color:var(--primary-dark);border-color:#a7d9d4}.action-btn.duplicate{color:#526d96}.empty,.loading{padding:70px 20px;text-align:center;color:var(--muted);font-size:12px}.loading:before{content:"";display:block;width:28px;height:28px;margin:0 auto 13px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.toast{position:fixed;right:25px;bottom:25px;z-index:30;max-width:360px;padding:13px 16px;border-radius:10px;background:var(--navy);color:#fff;font-size:11px;box-shadow:0 12px 30px #001f2c4d;transform:translateY(100px);opacity:0;transition:.25s}.toast.show{transform:none;opacity:1}.toast.error{background:#a43e45}.modal-backdrop{display:none;position:fixed;inset:0;background:#061e29a6;z-index:20;padding:24px;align-items:center;justify-content:center}.modal-backdrop.open{display:flex}.modal{width:min(820px,100%);max-height:92vh;overflow:auto;background:var(--card);border-radius:17px;box-shadow:0 25px 70px #00151f66}.modal-head{position:sticky;top:0;background:var(--card);z-index:2;padding:20px 23px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}.modal-head h3{margin:0;font-size:17px}.modal-head p{margin:4px 0 0;color:var(--muted);font-size:10px}.close{width:32px;height:32px;border:1px solid var(--border);background:var(--page);color:var(--text);border-radius:8px;cursor:pointer}.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px;padding:22px 23px}.field label{display:block;font-size:9px;font-weight:750;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:0 0 6px}.field input{width:100%;height:40px;border:1px solid var(--border);border-radius:8px;background:var(--page);color:var(--text);padding:0 11px;font-size:11px;outline:none}.field input:focus{border-color:var(--primary);box-shadow:0 0 0 3px #00a99d16}.modal-actions{position:sticky;bottom:0;background:var(--card);padding:16px 23px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:9px}.cancel,.save{height:39px;border-radius:9px;padding:0 17px;font-size:10px;font-weight:750;cursor:pointer}.cancel{border:1px solid var(--border);background:var(--card);color:var(--text)}.save{border:0;background:var(--primary);color:#fff}.save:disabled{opacity:.55}.footer{margin-top:auto;padding:13px 40px;border-top:1px solid var(--border);display:flex;justify-content:space-between;color:var(--muted);font-size:8px}
-    body.dark{--text:#eff9f9;--muted:#aec3c6;--border:#294d54;--page:#071c22;--card:#102e35;--soft:#153e3e;--shadow:0 14px 35px rgba(0,0,0,.25)}body.dark .toggle i{transform:translateX(16px)}
-    @media(max-width:1000px){.app{grid-template-columns:82px 1fr}.sidebar{padding:24px 12px}.brand div,.menu span:not(.badge),.menu>span,.copastur{display:none}.brand{justify-content:center;padding-inline:0}.menu a{justify-content:center;padding:0}.content,.topbar{padding-left:24px;padding-right:24px}.stats{grid-template-columns:1fr}.table-wrap{max-height:none}}
-    @media(max-width:650px){.app{display:block}.sidebar{height:66px;position:sticky;padding:10px 13px;flex-direction:row;align-items:center}.brand{border:0;padding:0}.brand img{width:42px;height:42px}.menu{display:flex;margin:0 0 0 auto}.menu a{width:41px;margin:0}.side-bottom{margin:0 0 0 6px}.theme-switch{width:41px}.theme-switch>span{display:none}.topbar{height:auto;padding:18px}.topbar h1{font-size:19px}.avatar{display:none}.content{padding:18px 14px}.page-head{align-items:flex-start;gap:12px}.stats{gap:9px}.stat{padding:14px}.toolbar{align-items:flex-start;flex-direction:column}.form-grid{grid-template-columns:1fr}.footer{padding:12px 18px}}
+    :root{
+      --primary:#00a99d;
+      --primary-dark:#007d86;
+      --navy:#063e52;
+      --text:#183744;
+      --muted:#75858d;
+      --border:#dfe8e9;
+      --page:#f3f8f8;
+      --card:#fff;
+      --soft:#e8f7f4;
+      --danger:#d55353;
+      --shadow:0 12px 35px rgba(13,64,75,.08)
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family:Inter,"Segoe UI",Arial,sans-serif;
+      background:var(--page);
+      color:var(--text)
+    }
+
+    button,input{font:inherit}
+
+    .app{
+      display:grid;
+      grid-template-columns:250px 1fr;
+      min-height:100vh;
+      transition:grid-template-columns .25s ease
+    }
+
+    .sidebar{
+      position:sticky;
+      top:0;
+      height:100vh;
+      padding:26px 18px 20px;
+      background:linear-gradient(165deg,#006f68 0%,#008f84 48%,#00a99d 100%);
+      color:#fff;
+      display:flex;
+      flex-direction:column;
+      box-shadow:8px 0 24px #073e531f;
+      z-index:5;
+      transition:padding .25s ease,transform .25s ease
+    }
+
+    .sidebar-toggle{
+      position:absolute;
+      top:19px;
+      right:-16px;
+      width:32px;
+      height:32px;
+      padding:0;
+      border:1px solid #b8e3df;
+      border-radius:50%;
+      background:var(--card);
+      color:var(--primary-dark);
+      box-shadow:0 5px 16px rgba(0,63,67,.18);
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      z-index:10;
+      transition:transform .25s ease,background .2s ease,color .2s ease
+    }
+
+    .sidebar-toggle:hover{
+      background:var(--primary);
+      color:#fff
+    }
+
+    .sidebar-toggle svg{
+      width:16px;
+      height:16px;
+      fill:none;
+      stroke:currentColor;
+      stroke-width:2;
+      stroke-linecap:round;
+      stroke-linejoin:round
+    }
+
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      padding:0 8px 25px;
+      border-bottom:1px solid #ffffff24
+    }
+
+    .brand img{
+      width:44px;
+      height:44px;
+      object-fit:contain;
+      border-radius:12px;
+      background:#ffffff12;
+      padding:5px
+    }
+
+    .brand strong,.brand small{display:block}
+    .brand strong{font-size:16px}
+    .brand small{
+      font-size:9px;
+      letter-spacing:1.7px;
+      color:#c5f1ed;
+      margin-top:5px
+    }
+
+    .menu{margin-top:27px}
+
+    .menu>span{
+      display:block;
+      font-size:9px;
+      letter-spacing:1.8px;
+      color:#c0eeea;
+      margin:0 12px 12px
+    }
+
+    .menu a{
+      width:100%;
+      height:46px;
+      border-radius:10px;
+      color:#e1f7f5;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:0 14px;
+      margin:4px 0;
+      text-decoration:none;
+      font-size:13px
+    }
+
+    .menu a svg{
+      width:19px;
+      fill:none;
+      stroke:currentColor;
+      stroke-width:1.8;
+      stroke-linecap:round;
+      stroke-linejoin:round
+    }
+
+    .menu a:hover{
+      background:#ffffff12;
+      color:#fff
+    }
+
+    .menu a.active{
+      background:linear-gradient(90deg,#08a99e,#00a395a8);
+      color:#fff;
+      box-shadow:0 7px 18px #003e4759
+    }
+
+    .menu .badge{
+      margin-left:auto;
+      width:19px;
+      height:19px;
+      border-radius:50%;
+      background:#ff6c6c;
+      display:grid;
+      place-items:center;
+      font-size:9px
+    }
+
+    .side-bottom{margin-top:auto}
+
+    .theme-switch{
+      border:1px solid #ffffff2b;
+      background:#003c4b8a;
+      color:#ddf1f1;
+      width:100%;
+      height:43px;
+      border-radius:10px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      cursor:pointer
+    }
+
+    .toggle{
+      width:34px;
+      height:18px;
+      border-radius:20px;
+      background:#082f3e;
+      padding:3px
+    }
+
+    .toggle i{
+      display:block;
+      width:12px;
+      height:12px;
+      border-radius:50%;
+      background:#0fc0af;
+      transition:.2s
+    }
+
+    .copastur{
+      border-top:1px solid #ffffff22;
+      margin-top:17px;
+      padding-top:18px;
+      display:flex;
+      align-items:center;
+      justify-content:center
+    }
+
+    .copastur img{
+      max-width:128px;
+      max-height:42px;
+      object-fit:contain
+    }
+
+    .main{
+      min-width:0;
+      display:flex;
+      flex-direction:column
+    }
+
+    .topbar{
+      height:108px;
+      background:var(--card);
+      border-bottom:1px solid var(--border);
+      padding:22px 40px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center
+    }
+
+    .eyebrow{
+      font-size:9px;
+      font-weight:800;
+      letter-spacing:2px;
+      color:var(--primary);
+      margin:0 0 6px
+    }
+
+    .topbar h1{
+      font-size:25px;
+      letter-spacing:-.5px;
+      margin:0
+    }
+
+    .topbar h1 span{font-weight:400}
+
+    .subtitle{
+      font-size:11px;
+      color:var(--muted);
+      margin:5px 0 0
+    }
+
+    .avatar{
+      width:39px;
+      height:39px;
+      border-radius:12px;
+      background:var(--navy);
+      color:#fff;
+      display:grid;
+      place-items:center;
+      font-size:11px;
+      font-weight:800
+    }
+
+    .content{
+      width:100%;
+      padding:28px 40px;
+      max-width:1600px;
+      margin:0 auto
+    }
+
+    .page-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:end;
+      margin-bottom:20px
+    }
+
+    .page-head h2{
+      font-size:21px;
+      margin:0 0 5px
+    }
+
+    .page-head p{
+      font-size:12px;
+      color:var(--muted);
+      margin:0
+    }
+
+    .refresh{
+      border:1px solid var(--border);
+      background:var(--card);
+      color:var(--primary-dark);
+      height:39px;
+      border-radius:9px;
+      padding:0 15px;
+      font-size:11px;
+      font-weight:700;
+      cursor:pointer
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:15px;
+      margin-bottom:20px
+    }
+
+    .stat{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:18px 20px;
+      box-shadow:var(--shadow);
+      display:flex;
+      align-items:center;
+      gap:13px
+    }
+
+    .stat-icon{
+      width:39px;
+      height:39px;
+      border-radius:11px;
+      background:var(--soft);
+      color:var(--primary);
+      display:grid;
+      place-items:center;
+      font-size:17px
+    }
+
+    .stat small{
+      display:block;
+      font-size:9px;
+      text-transform:uppercase;
+      letter-spacing:1px;
+      color:var(--muted);
+      margin-bottom:4px
+    }
+
+    .stat strong{font-size:20px}
+
+    .panel{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:16px;
+      box-shadow:var(--shadow);
+      overflow:hidden
+    }
+
+    .toolbar{
+      padding:16px 18px;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:15px
+    }
+
+    .search{
+      position:relative;
+      max-width:390px;
+      width:100%
+    }
+
+    .search span{
+      position:absolute;
+      left:12px;
+      top:10px;
+      color:var(--muted)
+    }
+
+    .search input{
+      width:100%;
+      height:38px;
+      border:1px solid var(--border);
+      background:var(--page);
+      color:var(--text);
+      border-radius:9px;
+      padding:0 12px 0 34px;
+      outline:none;
+      font-size:11px
+    }
+
+    .search input:focus{border-color:var(--primary)}
+    .counter{font-size:10px;color:var(--muted)}
+
+    .table-wrap{
+      overflow:auto;
+      max-height:calc(100vh - 430px);
+      min-height:300px
+    }
+
+    table{
+      border-collapse:collapse;
+      width:100%;
+      white-space:nowrap;
+      font-size:10px
+    }
+
+    th,td{
+      padding:11px 12px;
+      border-bottom:1px solid var(--border);
+      text-align:left
+    }
+
+    th{
+      position:sticky;
+      top:0;
+      background:var(--soft);
+      z-index:2;
+      color:var(--primary-dark);
+      font-size:9px;
+      text-transform:uppercase;
+      letter-spacing:.4px
+    }
+
+    tbody tr:hover{background:color-mix(in srgb,var(--soft) 45%,transparent)}
+
+    .status{
+      display:inline-flex;
+      padding:4px 8px;
+      border-radius:20px;
+      font-size:9px;
+      font-weight:750
+    }
+
+    .status.aprovado{background:#e3f5ef;color:#247b66}
+    .status.reprovado{background:#ffeded;color:#aa4343}
+    .status.outro{background:#fff5d9;color:#927121}
+
+    .actions-column{
+      width:84px;
+      min-width:84px;
+      text-align:center
+    }
+
+    th.actions-column{
+      position:sticky;
+      left:0;
+      top:0;
+      z-index:5;
+      background:var(--soft)
+    }
+
+    td.actions-column{
+      position:sticky;
+      left:0;
+      z-index:3;
+      background:var(--card)
+    }
+
+    tbody tr:hover td.actions-column{background:#f3fbfa}
+
+    .row-actions{
+      display:flex;
+      justify-content:center;
+      gap:6px
+    }
+
+    .action-btn{
+      width:31px;
+      height:31px;
+      padding:0;
+      border-radius:8px;
+      border:1px solid var(--border);
+      background:var(--card);
+      color:var(--text);
+      display:inline-grid;
+      place-items:center;
+      cursor:pointer
+    }
+
+    .action-btn svg{
+      width:15px;
+      height:15px;
+      fill:none;
+      stroke:currentColor;
+      stroke-width:1.9;
+      stroke-linecap:round;
+      stroke-linejoin:round
+    }
+
+    .action-btn.edit{
+      color:var(--primary-dark);
+      border-color:#a7d9d4
+    }
+
+    .action-btn.duplicate{color:#526d96}
+
+    .action-btn.edit:hover{
+      color:#fff;
+      background:var(--primary);
+      border-color:var(--primary)
+    }
+
+    .action-btn.duplicate:hover{
+      color:#fff;
+      background:#526d96;
+      border-color:#526d96
+    }
+
+    .empty,.loading{
+      padding:70px 20px;
+      text-align:center;
+      color:var(--muted);
+      font-size:12px
+    }
+
+    .loading:before{
+      content:"";
+      display:block;
+      width:28px;
+      height:28px;
+      margin:0 auto 13px;
+      border:3px solid var(--border);
+      border-top-color:var(--primary);
+      border-radius:50%;
+      animation:spin .8s linear infinite
+    }
+
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    .pagination{
+      min-height:63px;
+      padding:14px 18px;
+      border-top:1px solid var(--border);
+      background:var(--card);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:15px
+    }
+
+    .pagination-info{
+      color:var(--muted);
+      font-size:10px
+    }
+
+    .pagination-controls{
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      gap:6px;
+      flex-wrap:wrap
+    }
+
+    .page-btn{
+      min-width:32px;
+      height:32px;
+      padding:0 9px;
+      border:1px solid var(--border);
+      border-radius:8px;
+      background:var(--card);
+      color:var(--text);
+      display:grid;
+      place-items:center;
+      font-size:10px;
+      font-weight:750;
+      cursor:pointer;
+      transition:.2s ease
+    }
+
+    .page-btn:hover:not(:disabled){
+      border-color:var(--primary);
+      color:var(--primary-dark);
+      background:var(--soft)
+    }
+
+    .page-btn.active{
+      background:var(--primary);
+      border-color:var(--primary);
+      color:#fff
+    }
+
+    .page-btn:disabled{
+      opacity:.4;
+      cursor:not-allowed
+    }
+
+    .page-btn svg{
+      width:14px;
+      height:14px;
+      fill:none;
+      stroke:currentColor;
+      stroke-width:2;
+      stroke-linecap:round;
+      stroke-linejoin:round
+    }
+
+    .toast{
+      position:fixed;
+      right:25px;
+      bottom:25px;
+      z-index:30;
+      max-width:360px;
+      padding:13px 16px;
+      border-radius:10px;
+      background:var(--navy);
+      color:#fff;
+      font-size:11px;
+      box-shadow:0 12px 30px #001f2c4d;
+      transform:translateY(100px);
+      opacity:0;
+      transition:.25s
+    }
+
+    .toast.show{transform:none;opacity:1}
+    .toast.error{background:#a43e45}
+
+    .modal-backdrop{
+      display:none;
+      position:fixed;
+      inset:0;
+      background:#061e29a6;
+      z-index:20;
+      padding:24px;
+      align-items:center;
+      justify-content:center
+    }
+
+    .modal-backdrop.open{display:flex}
+
+    .modal{
+      width:min(820px,100%);
+      max-height:92vh;
+      overflow:auto;
+      background:var(--card);
+      border-radius:17px;
+      box-shadow:0 25px 70px #00151f66
+    }
+
+    .modal-head{
+      position:sticky;
+      top:0;
+      background:var(--card);
+      z-index:2;
+      padding:20px 23px;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      justify-content:space-between;
+      align-items:center
+    }
+
+    .modal-head h3{margin:0;font-size:17px}
+    .modal-head p{margin:4px 0 0;color:var(--muted);font-size:10px}
+
+    .close{
+      width:32px;
+      height:32px;
+      border:1px solid var(--border);
+      background:var(--page);
+      color:var(--text);
+      border-radius:8px;
+      cursor:pointer
+    }
+
+    .form-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:15px;
+      padding:22px 23px
+    }
+
+    .field label{
+      display:block;
+      font-size:9px;
+      font-weight:750;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:.5px;
+      margin:0 0 6px
+    }
+
+    .field input{
+      width:100%;
+      height:40px;
+      border:1px solid var(--border);
+      border-radius:8px;
+      background:var(--page);
+      color:var(--text);
+      padding:0 11px;
+      font-size:11px;
+      outline:none
+    }
+
+    .field input:focus{
+      border-color:var(--primary);
+      box-shadow:0 0 0 3px #00a99d16
+    }
+
+    .modal-actions{
+      position:sticky;
+      bottom:0;
+      background:var(--card);
+      padding:16px 23px;
+      border-top:1px solid var(--border);
+      display:flex;
+      justify-content:flex-end;
+      gap:9px
+    }
+
+    .cancel,.save{
+      height:39px;
+      border-radius:9px;
+      padding:0 17px;
+      font-size:10px;
+      font-weight:750;
+      cursor:pointer
+    }
+
+    .cancel{
+      border:1px solid var(--border);
+      background:var(--card);
+      color:var(--text)
+    }
+
+    .save{
+      border:0;
+      background:var(--primary);
+      color:#fff
+    }
+
+    .save:disabled{opacity:.55}
+
+    .footer{
+      margin-top:auto;
+      padding:13px 40px;
+      border-top:1px solid var(--border);
+      display:flex;
+      justify-content:space-between;
+      color:var(--muted);
+      font-size:8px
+    }
+
+    body.dark{
+      --text:#eff9f9;
+      --muted:#aec3c6;
+      --border:#294d54;
+      --page:#071c22;
+      --card:#102e35;
+      --soft:#153e3e;
+      --shadow:0 14px 35px rgba(0,0,0,.25)
+    }
+
+    body.dark .toggle i{transform:translateX(16px)}
+    body.dark tbody tr:hover td.actions-column{background:#173a40}
+
+    body.sidebar-collapsed .app{
+      grid-template-columns:82px 1fr
+    }
+
+    body.sidebar-collapsed .sidebar{
+      padding-left:12px;
+      padding-right:12px
+    }
+
+    body.sidebar-collapsed .brand{
+      justify-content:center;
+      padding-left:0;
+      padding-right:0
+    }
+
+    body.sidebar-collapsed .brand div,
+    body.sidebar-collapsed .menu>span,
+    body.sidebar-collapsed .menu a>span:not(.badge),
+    body.sidebar-collapsed .theme-switch>span,
+    body.sidebar-collapsed .copastur{
+      display:none
+    }
+
+    body.sidebar-collapsed .menu a{
+      justify-content:center;
+      padding:0;
+      position:relative
+    }
+
+    body.sidebar-collapsed .menu a .badge{
+      position:absolute;
+      top:3px;
+      right:3px;
+      margin:0
+    }
+
+    body.sidebar-collapsed .sidebar-toggle{transform:rotate(180deg)}
+    body.sidebar-collapsed .theme-switch{width:100%;padding:0}
+    body.sidebar-collapsed .toggle{margin:0 auto}
+
+    @media(max-width:1000px){
+      .app{grid-template-columns:82px 1fr}
+      .sidebar{padding:24px 12px}
+      .brand div,.menu span:not(.badge),.menu>span,.copastur{display:none}
+      .brand{justify-content:center;padding-inline:0}
+      .menu a{justify-content:center;padding:0;position:relative}
+      .sidebar-toggle{display:none}
+      .content,.topbar{padding-left:24px;padding-right:24px}
+      .stats{grid-template-columns:1fr}
+      .table-wrap{max-height:none}
+    }
+
+    @media(max-width:650px){
+      .app{display:block}
+      .sidebar{
+        height:66px;
+        position:sticky;
+        padding:10px 13px;
+        flex-direction:row;
+        align-items:center
+      }
+
+      .brand{border:0;padding:0}
+      .brand img{width:42px;height:42px}
+      .menu{display:flex;margin:0 0 0 auto}
+      .menu a{width:41px;margin:0}
+      .side-bottom{margin:0 0 0 6px}
+      .theme-switch{width:41px}
+      .theme-switch>span{display:none}
+      .topbar{height:auto;padding:18px}
+      .topbar h1{font-size:19px}
+      .avatar{display:none}
+      .content{padding:18px 14px}
+      .page-head{align-items:flex-start;gap:12px}
+      .stats{gap:9px}
+      .stat{padding:14px}
+      .toolbar{align-items:flex-start;flex-direction:column}
+      .form-grid{grid-template-columns:1fr}
+      .footer{padding:12px 18px}
+      .pagination{align-items:flex-start;flex-direction:column}
+      .pagination-controls{width:100%;justify-content:flex-start}
+      .actions-column{width:78px;min-width:78px}
+    }
   </style>
 </head>
 <body>
   <div class="app">
     <aside class="sidebar">
-      <div class="brand"><img src="pix.png" alt="Logo PIX"><div><strong>Conciliação</strong><small>PIX • COPASTUR</small></div></div>
-      <nav class="menu" aria-label="Menu principal"><span>OPERAÇÕES</span>
-        <a href="index.html"><svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 15v4h14v-4"/></svg><span>Importar Arquivos</span></a>
-        <a href="conciliacao.html" class="active"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="m8.5 12 2.3 2.3 4.8-5"/></svg><span>Conciliação</span></a>
-        <a href="#"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7zM14 3v5h5M10 12h5m-5 4h5"/></svg><span>Extratos</span></a>
-        <a href="#"><svg viewBox="0 0 24 24"><path d="M9 7 5 11l4 4M5 11h8a5 5 0 0 1 5 5v2"/></svg><span>Estornos</span></a>
-        <a href="#"><svg viewBox="0 0 24 24"><path d="M12 3 3.5 19h17zM12 9v4m0 3h.01"/></svg><span>Pendências</span><b class="badge">3</b></a>
+      <button
+        id="sidebarToggle"
+        class="sidebar-toggle"
+        type="button"
+        aria-label="Ocultar menu lateral"
+        title="Ocultar menu lateral"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m15 18-6-6 6-6"></path>
+        </svg>
+      </button>
+
+      <div class="brand">
+        <img src="pix.png" alt="Logo PIX">
+        <div>
+          <strong>Conciliação</strong>
+          <small>PIX • COPASTUR</small>
+        </div>
+      </div>
+
+      <nav class="menu" aria-label="Menu principal">
+        <span>OPERAÇÕES</span>
+
+        <a href="index.html">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 15v4h14v-4"/>
+          </svg>
+          <span>Importar Arquivos</span>
+        </a>
+
+        <a href="conciliacao.html" class="active">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="8"/>
+            <path d="m8.5 12 2.3 2.3 4.8-5"/>
+          </svg>
+          <span>Conciliação</span>
+        </a>
+
+        <a href="#">
+          <svg viewBox="0 0 24 24">
+            <path d="M7 3h7l4 4v14H7zM14 3v5h5M10 12h5m-5 4h5"/>
+          </svg>
+          <span>Extratos</span>
+        </a>
+
+        <a href="#">
+          <svg viewBox="0 0 24 24">
+            <path d="M9 7 5 11l4 4M5 11h8a5 5 0 0 1 5 5v2"/>
+          </svg>
+          <span>Estornos</span>
+        </a>
+
+        <a href="#">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 3 3.5 19h17zM12 9v4m0 3h.01"/>
+          </svg>
+          <span>Pendências</span>
+          <b class="badge">3</b>
+        </a>
       </nav>
-      <div class="side-bottom"><button id="themeButton" class="theme-switch" aria-label="Alternar modo de alto contraste"><span>☼</span><span class="toggle"><i></i></span><span>◐</span></button><div class="copastur"><img src="copastur.png" alt="Copastur Viagens e Turismo"></div></div>
+
+      <div class="side-bottom">
+        <button id="themeButton" class="theme-switch" aria-label="Alternar modo de alto contraste">
+          <span>☼</span>
+          <span class="toggle"><i></i></span>
+          <span>◐</span>
+        </button>
+
+        <div class="copastur">
+          <img src="copastur.png" alt="Copastur Viagens e Turismo">
+        </div>
+      </div>
     </aside>
+
     <main class="main">
-      <header class="topbar"><div><p class="eyebrow">SMARTOPERATIONS</p><h1>Conciliação PIX <span>— Copastur</span></h1><p class="subtitle">Conciliador de transações pix feito no smartoperations</p></div><div class="avatar">RL</div></header>
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">SMARTOPERATIONS</p>
+          <h1>Conciliação PIX <span>— Copastur</span></h1>
+          <p class="subtitle">Conciliador de transações pix feito no smartoperations</p>
+        </div>
+        <div class="avatar">RL</div>
+      </header>
+
       <section class="content">
-        <div class="page-head"><div><h2>Registros para conciliação</h2><p>Consulte, edite ou duplique as transações salvas no Google Sheets.</p></div><button id="refreshButton" class="refresh">↻ Atualizar dados</button></div>
-        <div class="stats"><article class="stat"><span class="stat-icon">▤</span><div><small>Total de registros</small><strong id="totalRecords">—</strong></div></article><article class="stat"><span class="stat-icon">✓</span><div><small>Aprovados</small><strong id="approvedRecords">—</strong></div></article><article class="stat"><span class="stat-icon">R$</span><div><small>Valor total</small><strong id="totalValue">—</strong></div></article></div>
-        <section class="panel"><div class="toolbar"><div class="search"><span>⌕</span><input id="searchInput" type="search" placeholder="Buscar por fornecedor, OS, ID, cliente..."></div><span id="counter" class="counter"></span></div><div id="tableContainer" class="table-wrap"><div class="loading">Carregando registros do Google Sheets...</div></div></section>
+        <div class="page-head">
+          <div>
+            <h2>Registros para conciliação</h2>
+            <p>Consulte, edite ou duplique as transações salvas no Google Sheets.</p>
+          </div>
+          <button id="refreshButton" class="refresh">↻ Atualizar dados</button>
+        </div>
+
+        <div class="stats">
+          <article class="stat">
+            <span class="stat-icon">▤</span>
+            <div>
+              <small>Total de registros</small>
+              <strong id="totalRecords">—</strong>
+            </div>
+          </article>
+
+          <article class="stat">
+            <span class="stat-icon">✓</span>
+            <div>
+              <small>Aprovados</small>
+              <strong id="approvedRecords">—</strong>
+            </div>
+          </article>
+
+          <article class="stat">
+            <span class="stat-icon">R$</span>
+            <div>
+              <small>Valor total</small>
+              <strong id="totalValue">—</strong>
+            </div>
+          </article>
+        </div>
+
+        <section class="panel">
+          <div class="toolbar">
+            <div class="search">
+              <span>⌕</span>
+              <input id="searchInput" type="search" placeholder="Buscar por fornecedor, OS, ID, cliente...">
+            </div>
+            <span id="counter" class="counter"></span>
+          </div>
+
+          <div id="tableContainer" class="table-wrap">
+            <div class="loading">Carregando registros do Google Sheets...</div>
+          </div>
+
+          <div id="pagination" class="pagination" aria-label="Paginação dos registros"></div>
+        </section>
       </section>
-      <footer class="footer"><span>Smartoperations • Conciliação PIX</span><span>v2.0.0</span></footer>
+
+      <footer class="footer">
+        <span>Smartoperations • Conciliação PIX</span>
+        <span>v2.1.0</span>
+      </footer>
     </main>
   </div>
-  <div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><section class="modal"><header class="modal-head"><div><h3 id="modalTitle">Editar registro</h3><p id="modalSubtitle"></p></div><button id="closeModal" class="close" aria-label="Fechar">×</button></header><form id="editForm"><div id="formGrid" class="form-grid"></div><footer class="modal-actions"><button type="button" id="cancelEdit" class="cancel">Cancelar</button><button type="submit" id="saveEdit" class="save">Salvar alterações</button></footer></form></section></div>
+
+  <div
+    id="modalBackdrop"
+    class="modal-backdrop"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modalTitle"
+  >
+    <section class="modal">
+      <header class="modal-head">
+        <div>
+          <h3 id="modalTitle">Editar registro</h3>
+          <p id="modalSubtitle"></p>
+        </div>
+        <button id="closeModal" class="close" aria-label="Fechar">×</button>
+      </header>
+
+      <form id="editForm">
+        <div id="formGrid" class="form-grid"></div>
+        <footer class="modal-actions">
+          <button type="button" id="cancelEdit" class="cancel">Cancelar</button>
+          <button type="submit" id="saveEdit" class="save">Salvar alterações</button>
+        </footer>
+      </form>
+    </section>
+  </div>
+
   <div id="toast" class="toast"></div>
+
   <script>
     const API_URL="https://script.google.com/macros/s/AKfycbz9yjkk4szt3_qU7YD_I2lsCdy15AjZjoL9o2Jkudy8KB_2EVozqQX1izImvjUE-aDmrA/exec";
-    const COLUMNS=["Fornecedor","OS","ID","Status","Aprovador","Data de Criação","Data de Aprovação","Cliente","Consultor Solicitante","Departamento","Tipo de Serviço","Valor Total"];
-    let records=[],filtered=[],editingRow=null;
-    const tableContainer=document.getElementById("tableContainer"),searchInput=document.getElementById("searchInput"),modal=document.getElementById("modalBackdrop"),editForm=document.getElementById("editForm"),saveEdit=document.getElementById("saveEdit");
-    if(localStorage.getItem("pix-theme")==="dark")document.body.classList.add("dark");
-    document.getElementById("themeButton").onclick=()=>{document.body.classList.toggle("dark");localStorage.setItem("pix-theme",document.body.classList.contains("dark")?"dark":"light")};
+
+    const COLUMNS=[
+      "Fornecedor",
+      "OS",
+      "ID",
+      "Status",
+      "Aprovador",
+      "Data de Criação",
+      "Data de Aprovação",
+      "Cliente",
+      "Consultor Solicitante",
+      "Departamento",
+      "Tipo de Serviço",
+      "Valor Total"
+    ];
+
+    const RECORDS_PER_PAGE=10;
+
+    let records=[];
+    let filtered=[];
+    let editingRow=null;
+    let currentPage=1;
+
+    const tableContainer=document.getElementById("tableContainer");
+    const searchInput=document.getElementById("searchInput");
+    const modal=document.getElementById("modalBackdrop");
+    const editForm=document.getElementById("editForm");
+    const saveEdit=document.getElementById("saveEdit");
+    const pagination=document.getElementById("pagination");
+    const sidebarToggle=document.getElementById("sidebarToggle");
+
+    if(localStorage.getItem("pix-theme")==="dark"){
+      document.body.classList.add("dark");
+    }
+
+    if(localStorage.getItem("pix-sidebar")==="collapsed"){
+      document.body.classList.add("sidebar-collapsed");
+      sidebarToggle.setAttribute("aria-label","Exibir menu lateral");
+      sidebarToggle.setAttribute("title","Exibir menu lateral");
+    }
+
+    document.getElementById("themeButton").onclick=()=>{
+      document.body.classList.toggle("dark");
+      localStorage.setItem(
+        "pix-theme",
+        document.body.classList.contains("dark")?"dark":"light"
+      );
+    };
+
+    sidebarToggle.addEventListener("click",()=>{
+      const collapsed=document.body.classList.toggle("sidebar-collapsed");
+
+      localStorage.setItem(
+        "pix-sidebar",
+        collapsed?"collapsed":"expanded"
+      );
+
+      sidebarToggle.setAttribute(
+        "aria-label",
+        collapsed?"Exibir menu lateral":"Ocultar menu lateral"
+      );
+
+      sidebarToggle.setAttribute(
+        "title",
+        collapsed?"Exibir menu lateral":"Ocultar menu lateral"
+      );
+    });
+
     function loadRecords(){
       tableContainer.innerHTML='<div class="loading">Carregando registros do Google Sheets...</div>';
-      const callback=`pixList_${Date.now()}`;const script=document.createElement("script");
-      const timeout=setTimeout(()=>{cleanup();showLoadError("A consulta demorou demais. Verifique a implantação 2.0.0 do Apps Script.")},15000);
-      function cleanup(){clearTimeout(timeout);delete window[callback];script.remove()}
-      window[callback]=data=>{cleanup();if(!data||!data.success)return showLoadError(data&&data.message?data.message:"Não foi possível consultar os registros.");records=Array.isArray(data.records)?data.records:[];applyFilter();updateStats()};
-      script.onerror=()=>{cleanup();showLoadError("Falha ao acessar o Apps Script. Confirme se o acesso está definido como Qualquer pessoa.")};
-      script.src=`${API_URL}?action=list&callback=${callback}&_=${Date.now()}`;document.body.appendChild(script);
+      pagination.innerHTML="";
+
+      const callback=`pixList_${Date.now()}`;
+      const script=document.createElement("script");
+
+      const timeout=setTimeout(()=>{
+        cleanup();
+        showLoadError("A consulta demorou demais. Verifique a implantação 2.0.0 do Apps Script.");
+      },15000);
+
+      function cleanup(){
+        clearTimeout(timeout);
+        delete window[callback];
+        script.remove();
+      }
+
+      window[callback]=data=>{
+        cleanup();
+
+        if(!data||!data.success){
+          return showLoadError(
+            data&&data.message
+              ? data.message
+              : "Não foi possível consultar os registros."
+          );
+        }
+
+        records=Array.isArray(data.records)?data.records:[];
+        currentPage=1;
+        applyFilter();
+        updateStats();
+      };
+
+      script.onerror=()=>{
+        cleanup();
+        showLoadError(
+          "Falha ao acessar o Apps Script. Confirme se o acesso está definido como Qualquer pessoa."
+        );
+      };
+
+      script.src=`${API_URL}?action=list&callback=${callback}&_=${Date.now()}`;
+      document.body.appendChild(script);
     }
-    function showLoadError(message){tableContainer.innerHTML=`<div class="empty">${escapeHtml(message)}<br><br><button class="refresh" onclick="loadRecords()">Tentar novamente</button></div>`}
-    function applyFilter(){const query=normalize(searchInput.value);filtered=!query?records:records.filter(record=>COLUMNS.some(column=>normalize(record[column]).includes(query)));renderTable();document.getElementById("counter").textContent=`${filtered.length} de ${records.length} registros`}
+
+    function showLoadError(message){
+      tableContainer.innerHTML=`
+        <div class="empty">
+          ${escapeHtml(message)}
+          <br><br>
+          <button class="refresh" onclick="loadRecords()">Tentar novamente</button>
+        </div>
+      `;
+      pagination.innerHTML="";
+    }
+
+    function applyFilter(){
+      const query=normalize(searchInput.value);
+
+      filtered=!query
+        ? records
+        : records.filter(record=>
+            COLUMNS.some(column=>
+              normalize(record[column]).includes(query)
+            )
+          );
+
+      currentPage=1;
+      renderTable();
+      renderPagination();
+
+      document.getElementById("counter").textContent=
+        `${filtered.length} de ${records.length} registros`;
+    }
+
     function renderTable(){
-      if(!filtered.length){tableContainer.innerHTML='<div class="empty">Nenhum registro encontrado.</div>';return}
-      const visible=["Fornecedor","OS","ID","Status","Aprovador","Cliente","Departamento","Tipo de Serviço","Valor Total"];
-      tableContainer.innerHTML=`<table><thead><tr>${visible.map(column=>`<th>${column}</th>`).join("")}<th>Ações</th></tr></thead><tbody>${filtered.map(record=>`<tr>${visible.map(column=>column==="Status"?`<td><span class="status ${statusClass(record[column])}">${escapeHtml(record[column])}</span></td>`:`<td title="${escapeAttr(record[column])}">${escapeHtml(record[column])}</td>`).join("")}<td><div class="row-actions"><button class="action-btn edit" data-edit="${record._rowNumber}">Editar</button><button class="action-btn duplicate" data-duplicate="${record._rowNumber}">Duplicar</button></div></td></tr>`).join("")}</tbody></table>`;
+      if(!filtered.length){
+        tableContainer.innerHTML=
+          '<div class="empty">Nenhum registro encontrado.</div>';
+        pagination.innerHTML="";
+        return;
+      }
+
+      const visible=[
+        "Fornecedor",
+        "OS",
+        "ID",
+        "Status",
+        "Aprovador",
+        "Cliente",
+        "Departamento",
+        "Tipo de Serviço",
+        "Valor Total"
+      ];
+
+      const startIndex=(currentPage-1)*RECORDS_PER_PAGE;
+      const endIndex=startIndex+RECORDS_PER_PAGE;
+      const pageRecords=filtered.slice(startIndex,endIndex);
+
+      const editIcon=`
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 20h9"></path>
+          <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"></path>
+        </svg>
+      `;
+
+      const duplicateIcon=`
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="8" y="8" width="11" height="12" rx="2"></rect>
+          <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h2"></path>
+          <path d="M11 12h5M11 15h5"></path>
+        </svg>
+      `;
+
+      tableContainer.innerHTML=`
+        <table>
+          <thead>
+            <tr>
+              <th class="actions-column" aria-label="Ações"></th>
+              ${visible.map(column=>`<th>${escapeHtml(column)}</th>`).join("")}
+            </tr>
+          </thead>
+
+          <tbody>
+            ${pageRecords.map(record=>`
+              <tr>
+                <td class="actions-column">
+                  <div class="row-actions">
+                    <button
+                      type="button"
+                      class="action-btn edit"
+                      data-edit="${record._rowNumber}"
+                      title="Editar registro"
+                      aria-label="Editar registro"
+                    >
+                      ${editIcon}
+                    </button>
+
+                    <button
+                      type="button"
+                      class="action-btn duplicate"
+                      data-duplicate="${record._rowNumber}"
+                      title="Duplicar registro"
+                      aria-label="Duplicar registro"
+                    >
+                      ${duplicateIcon}
+                    </button>
+                  </div>
+                </td>
+
+                ${visible.map(column=>
+                  column==="Status"
+                    ? `
+                      <td>
+                        <span class="status ${statusClass(record[column])}">
+                          ${escapeHtml(record[column])}
+                        </span>
+                      </td>
+                    `
+                    : `
+                      <td title="${escapeAttr(record[column])}">
+                        ${
+                          column==="Valor Total"
+                            ? formatCurrency(record[column])
+                            : escapeHtml(record[column])
+                        }
+                      </td>
+                    `
+                ).join("")}
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      `;
     }
-    function updateStats(){document.getElementById("totalRecords").textContent=records.length.toLocaleString("pt-BR");document.getElementById("approvedRecords").textContent=records.filter(record=>normalize(record.Status)==="aprovado").length.toLocaleString("pt-BR");const total=records.reduce((sum,record)=>sum+parseCurrency(record["Valor Total"]),0);document.getElementById("totalValue").textContent=total.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
-    function openEdit(rowNumber){const record=records.find(item=>Number(item._rowNumber)===Number(rowNumber));if(!record)return;editingRow=Number(rowNumber);document.getElementById("modalSubtitle").textContent=`Linha ${editingRow} da planilha`;document.getElementById("formGrid").innerHTML=COLUMNS.map((column,index)=>`<div class="field"><label for="field-${index}">${column}</label><input id="field-${index}" name="${escapeAttr(column)}" value="${escapeAttr(record[column])}" ${column==="ID"?"required":""}></div>`).join("");modal.classList.add("open");document.getElementById("field-0").focus()}
-    function closeEdit(){modal.classList.remove("open");editingRow=null;editForm.reset()}
-    async function sendAction(payload){const body=new URLSearchParams({payload:JSON.stringify(payload)});await fetch(API_URL,{method:"POST",mode:"no-cors",body})}
-    async function duplicateRecord(rowNumber,button){if(!confirm("Deseja criar uma cópia idêntica deste registro?"))return;button.disabled=true;button.textContent="Duplicando...";try{await sendAction({action:"duplicate",rowNumber:Number(rowNumber)});showToast("Solicitação de duplicação enviada.");setTimeout(loadRecords,1800)}catch(error){showToast("Não foi possível duplicar o registro.",true)}finally{button.disabled=false;button.textContent="Duplicar"}}
-    editForm.addEventListener("submit",async event=>{event.preventDefault();const record=Object.fromEntries(new FormData(editForm).entries());saveEdit.disabled=true;saveEdit.textContent="Salvando...";try{await sendAction({action:"update",rowNumber:editingRow,record});closeEdit();showToast("Alterações enviadas para a planilha.");setTimeout(loadRecords,1800)}catch(error){showToast("Não foi possível salvar as alterações.",true)}finally{saveEdit.disabled=false;saveEdit.textContent="Salvar alterações"}});
-    tableContainer.addEventListener("click",event=>{const edit=event.target.closest("[data-edit]"),duplicate=event.target.closest("[data-duplicate]");if(edit)openEdit(edit.dataset.edit);if(duplicate)duplicateRecord(duplicate.dataset.duplicate,duplicate)});
-    searchInput.addEventListener("input",applyFilter);document.getElementById("refreshButton").onclick=loadRecords;document.getElementById("closeModal").onclick=closeEdit;document.getElementById("cancelEdit").onclick=closeEdit;modal.addEventListener("click",event=>{if(event.target===modal)closeEdit()});document.addEventListener("keydown",event=>{if(event.key==="Escape")closeEdit()});
-    function showToast(message,error=false){const toast=document.getElementById("toast");toast.textContent=message;toast.className=`toast show${error?" error":""}`;setTimeout(()=>toast.className="toast",3500)}
-    function normalize(value){return String(value??"").trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase()}function statusClass(value){const status=normalize(value);return status==="aprovado"?"aprovado":status==="reprovado"?"reprovado":"outro"}function parseCurrency(value){const text=String(value??"").replace(/R\$/gi,"").replace(/\s/g,"");const normalized=text.includes(",")?text.replace(/\./g,"").replace(",","."):text;const number=Number(normalized);return Number.isFinite(number)?number:0}function escapeHtml(value){const div=document.createElement("div");div.textContent=String(value??"");return div.innerHTML}function escapeAttr(value){return escapeHtml(value).replace(/"/g,"&quot;")}
+
+    function renderPagination(){
+      const totalPages=Math.ceil(filtered.length/RECORDS_PER_PAGE);
+
+      if(!filtered.length){
+        pagination.innerHTML="";
+        return;
+      }
+
+      if(currentPage>totalPages){
+        currentPage=totalPages;
+      }
+
+      const start=(currentPage-1)*RECORDS_PER_PAGE+1;
+      const end=Math.min(currentPage*RECORDS_PER_PAGE,filtered.length);
+
+      pagination.innerHTML=`
+        <span class="pagination-info">
+          Exibindo ${start}–${end} de ${filtered.length} registros
+        </span>
+
+        <div class="pagination-controls">
+          <button
+            type="button"
+            class="page-btn"
+            data-page="first"
+            title="Primeira página"
+            aria-label="Primeira página"
+            ${currentPage===1?"disabled":""}
+          >
+            <svg viewBox="0 0 24 24">
+              <path d="m11 17-5-5 5-5"></path>
+              <path d="m18 17-5-5 5-5"></path>
+            </svg>
+          </button>
+
+          <button
+            type="button"
+            class="page-btn"
+            data-page="previous"
+            title="Página anterior"
+            aria-label="Página anterior"
+            ${currentPage===1?"disabled":""}
+          >
+            <svg viewBox="0 0 24 24">
+              <path d="m15 18-6-6 6-6"></path>
+            </svg>
+          </button>
+
+          ${buildPageButtons(totalPages)}
+
+          <button
+            type="button"
+            class="page-btn"
+            data-page="next"
+            title="Próxima página"
+            aria-label="Próxima página"
+            ${currentPage===totalPages?"disabled":""}
+          >
+            <svg viewBox="0 0 24 24">
+              <path d="m9 18 6-6-6-6"></path>
+            </svg>
+          </button>
+
+          <button
+            type="button"
+            class="page-btn"
+            data-page="last"
+            title="Última página"
+            aria-label="Última página"
+            ${currentPage===totalPages?"disabled":""}
+          >
+            <svg viewBox="0 0 24 24">
+              <path d="m6 17 5-5-5-5"></path>
+              <path d="m13 17 5-5-5-5"></path>
+            </svg>
+          </button>
+        </div>
+      `;
+    }
+
+    function buildPageButtons(totalPages){
+      const pages=[];
+      const maximumVisiblePages=5;
+
+      let startPage=Math.max(
+        1,
+        currentPage-Math.floor(maximumVisiblePages/2)
+      );
+
+      let endPage=Math.min(
+        totalPages,
+        startPage+maximumVisiblePages-1
+      );
+
+      if(endPage-startPage+1<maximumVisiblePages){
+        startPage=Math.max(
+          1,
+          endPage-maximumVisiblePages+1
+        );
+      }
+
+      for(let page=startPage;page<=endPage;page++){
+        pages.push(`
+          <button
+            type="button"
+            class="page-btn ${page===currentPage?"active":""}"
+            data-page="${page}"
+            aria-label="Ir para a página ${page}"
+            ${page===currentPage?'aria-current="page"':""}
+          >
+            ${page}
+          </button>
+        `);
+      }
+
+      return pages.join("");
+    }
+
+    function changePage(page){
+      const totalPages=Math.ceil(filtered.length/RECORDS_PER_PAGE);
+
+      if(page==="first"){
+        currentPage=1;
+      }else if(page==="previous"){
+        currentPage=Math.max(1,currentPage-1);
+      }else if(page==="next"){
+        currentPage=Math.min(totalPages,currentPage+1);
+      }else if(page==="last"){
+        currentPage=totalPages;
+      }else{
+        currentPage=Number(page);
+      }
+
+      renderTable();
+      renderPagination();
+
+      tableContainer.scrollTo({
+        top:0,
+        behavior:"smooth"
+      });
+    }
+
+    function updateStats(){
+      document.getElementById("totalRecords").textContent=
+        records.length.toLocaleString("pt-BR");
+
+      document.getElementById("approvedRecords").textContent=
+        records
+          .filter(record=>normalize(record.Status)==="aprovado")
+          .length
+          .toLocaleString("pt-BR");
+
+      const total=records.reduce(
+        (sum,record)=>sum+parseCurrency(record["Valor Total"]),
+        0
+      );
+
+      document.getElementById("totalValue").textContent=
+        total.toLocaleString("pt-BR",{
+          style:"currency",
+          currency:"BRL"
+        });
+    }
+
+    function openEdit(rowNumber){
+      const record=records.find(
+        item=>Number(item._rowNumber)===Number(rowNumber)
+      );
+
+      if(!record)return;
+
+      editingRow=Number(rowNumber);
+
+      document.getElementById("modalSubtitle").textContent=
+        `Linha ${editingRow} da planilha`;
+
+      document.getElementById("formGrid").innerHTML=
+        COLUMNS.map((column,index)=>`
+          <div class="field">
+            <label for="field-${index}">${column}</label>
+            <input
+              id="field-${index}"
+              name="${escapeAttr(column)}"
+              value="${escapeAttr(record[column])}"
+              ${column==="ID"?"required":""}
+            >
+          </div>
+        `).join("");
+
+      modal.classList.add("open");
+      document.getElementById("field-0").focus();
+    }
+
+    function closeEdit(){
+      modal.classList.remove("open");
+      editingRow=null;
+      editForm.reset();
+    }
+
+    async function sendAction(payload){
+      const body=new URLSearchParams({
+        payload:JSON.stringify(payload)
+      });
+
+      await fetch(API_URL,{
+        method:"POST",
+        mode:"no-cors",
+        body
+      });
+    }
+
+    async function duplicateRecord(rowNumber,button){
+      if(!confirm("Deseja criar uma cópia idêntica deste registro?")){
+        return;
+      }
+
+      button.disabled=true;
+
+      try{
+        await sendAction({
+          action:"duplicate",
+          rowNumber:Number(rowNumber)
+        });
+
+        showToast("Solicitação de duplicação enviada.");
+        setTimeout(loadRecords,1800);
+      }catch(error){
+        showToast("Não foi possível duplicar o registro.",true);
+      }finally{
+        button.disabled=false;
+      }
+    }
+
+    editForm.addEventListener("submit",async event=>{
+      event.preventDefault();
+
+      const record=Object.fromEntries(
+        new FormData(editForm).entries()
+      );
+
+      saveEdit.disabled=true;
+      saveEdit.textContent="Salvando...";
+
+      try{
+        await sendAction({
+          action:"update",
+          rowNumber:editingRow,
+          record
+        });
+
+        closeEdit();
+        showToast("Alterações enviadas para a planilha.");
+        setTimeout(loadRecords,1800);
+      }catch(error){
+        showToast("Não foi possível salvar as alterações.",true);
+      }finally{
+        saveEdit.disabled=false;
+        saveEdit.textContent="Salvar alterações";
+      }
+    });
+
+    tableContainer.addEventListener("click",event=>{
+      const edit=event.target.closest("[data-edit]");
+      const duplicate=event.target.closest("[data-duplicate]");
+
+      if(edit){
+        openEdit(edit.dataset.edit);
+      }
+
+      if(duplicate){
+        duplicateRecord(
+          duplicate.dataset.duplicate,
+          duplicate
+        );
+      }
+    });
+
+    pagination.addEventListener("click",event=>{
+      const button=event.target.closest("[data-page]");
+
+      if(!button||button.disabled){
+        return;
+      }
+
+      changePage(button.dataset.page);
+    });
+
+    searchInput.addEventListener("input",applyFilter);
+
+    document.getElementById("refreshButton").onclick=loadRecords;
+    document.getElementById("closeModal").onclick=closeEdit;
+    document.getElementById("cancelEdit").onclick=closeEdit;
+
+    modal.addEventListener("click",event=>{
+      if(event.target===modal){
+        closeEdit();
+      }
+    });
+
+    document.addEventListener("keydown",event=>{
+      if(event.key==="Escape"){
+        closeEdit();
+      }
+    });
+
+    function showToast(message,error=false){
+      const toast=document.getElementById("toast");
+      toast.textContent=message;
+      toast.className=`toast show${error?" error":""}`;
+
+      setTimeout(()=>{
+        toast.className="toast";
+      },3500);
+    }
+
+    function normalize(value){
+      return String(value??"")
+        .trim()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g,"")
+        .toLowerCase();
+    }
+
+    function statusClass(value){
+      const status=normalize(value);
+
+      return status==="aprovado"
+        ? "aprovado"
+        : status==="reprovado"
+          ? "reprovado"
+          : "outro";
+    }
+
+    function parseCurrency(value){
+      const text=String(value??"")
+        .replace(/R\$/gi,"")
+        .replace(/\s/g,"");
+
+      const normalized=text.includes(",")
+        ? text.replace(/\./g,"").replace(",",".")
+        : text;
+
+      const number=Number(normalized);
+      return Number.isFinite(number)?number:0;
+    }
+
+    function formatCurrency(value){
+      return parseCurrency(value).toLocaleString("pt-BR",{
+        style:"currency",
+        currency:"BRL"
+      });
+    }
+
+    function escapeHtml(value){
+      const div=document.createElement("div");
+      div.textContent=String(value??"");
+      return div.innerHTML;
+    }
+
+    function escapeAttr(value){
+      return escapeHtml(value).replace(/"/g,"&quot;");
+    }
+
     loadRecords();
   </script>
 </body>
