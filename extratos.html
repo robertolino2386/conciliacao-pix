@@ -786,7 +786,7 @@
 
       <footer class="footer">
         <span>Smartoperations • Conciliação PIX</span>
-        <span>v2.2.1</span>
+        <span>v2.2.2</span>
       </footer>
     </main>
   </div>
@@ -1269,31 +1269,29 @@
     }
 
     function formatDate(value){
-  const raw = String(value ?? "").trim();
+      const raw=String(value??"").trim();
 
-  if(!raw) return "";
+      if(!raw)return "";
 
-  // Formato ISO: 2026-08-02T01:40:17.641898+00:00
-  const match = raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      const isoMatch=raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
 
-  if(match){
-    const [, ano, mes, dia] = match;
-    return `${dia}/${mes}/${ano}`;
-  }
+      if(isoMatch){
+        const ano=isoMatch[1];
+        const mes=isoMatch[2];
+        const dia=isoMatch[3];
+        return `${dia}/${mes}/${ano}`;
+      }
 
-  // Caso já esteja em dd/mm/aaaa
-  if(raw.includes("/")){
-    return raw.substring(0,10);
-  }
+      const brMatch=raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
 
-  return raw;
-}
+      if(brMatch){
+        const dia=String(brMatch[1]).padStart(2,"0");
+        const mes=String(brMatch[2]).padStart(2,"0");
+        const ano=brMatch[3];
+        return `${dia}/${mes}/${ano}`;
+      }
 
-      return [
-        String(date.getDate()).padStart(2,"0"),
-        String(date.getMonth()+1).padStart(2,"0"),
-        date.getFullYear()
-      ].join("/");
+      return raw;
     }
 
     function toIsoDate(value){
