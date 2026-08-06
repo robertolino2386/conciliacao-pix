@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Cadastro De/Para de clientes PIX e Base Benner">
+  <title>Conciliação PIX - Copastur | Cadastro de Clientes</title>
+  <style>
+    :root{
+      --primary:#00a99d;
+      --primary-dark:#007d86;
+      --navy:#063e52;
+      --text:#183744;
+      --muted:#75858d;
+      --border:#dfe8e9;
+      --page:#f3f8f8;
+      --card:#fff;
+      --soft:#e8f7f4;
+      --danger:#d55353;
+      --shadow:0 12px 35px rgba(13,64,75,.08)
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family:Inter,"Segoe UI",Arial,sans-serif;
+      background:var(--page);
+      color:var(--text)
+    }
+
+    button,input{font:inherit}
+
+    .app{
+      display:grid;
+      grid-template-columns:250px 1fr;
+      min-height:100vh;
+      transition:grid-template-columns .25s ease
+    }
+
+    .sidebar{
+      position:sticky;
+      top:0;
+      height:100vh;
+      padding:26px 18px 20px;
+      background:linear-gradient(170deg,#073e53 0%,#00636d 62%,#00837d 100%);
+      color:#fff;
+      display:flex;
+      flex-direction:column;
+      box-shadow:8px 0 24px #073e531f;
+      z-index:5
+    }
+
+    .sidebar-toggle{
+      position:absolute;
+      top:19px;
+      right:-16px;
+      width:32px;
+      height:32px;
+      padding:0;
+      border:1px solid #b8e3df;
+      border-radius:50%;
+      background:var(--card);
+      color:var(--primary-dark);
+      box-shadow:0 5px 16px rgba(0,63,67,.18);
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      z-index:10
+    }
+
+    .sidebar-toggle svg{
+      width:16px;
+      height:16px;
+      fill:none;
+      stroke:currentColor;
+      stroke-width:2
+    }
+
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      padding:0 8px 25px;
+      border-bottom:1px solid #ffffff24
+    }
+
+    .brand img{
+      width:44px;
+      height:44px;
+      object-fit:contain;
+      border-radius:12px;
+      background:#ffffff12;
+      padding:5px
+    }
+
+    .brand strong,.brand small{display:block}
+    .brand strong{font-size:16px}
+    .brand small{
+      font-size:9px;
+      letter-spacing:1.7px;
+      color:#9bdad7;
+      margin-top:5px
+    }
+
+    .menu{margin-top:27px}
+
+    .menu>span{
+      display:block;
+      font-size:9px;
+      letter-spacing:1.8px;
+      color:#80c7c8;
+      margin:0 12px 12px
+    }
+
+    .menu a{
+      width:100%;
+      height:46px;
+      border-radius:10px;
+      color:#c5dee0;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:0 14px;
+      margin:4px 0;
+      text-decoration:none;
+      font-size:13px
+    }
+
+    .menu a svg{
+      width:19px;
+      fill:none;
+      stroke:currentColor;
+      stroke-width:1.8;
+      stroke-linecap:round;
+      stroke-linejoin:round
+    }
+
+    .menu a:hover{background:#ffffff12;color:#fff}
+
+    .menu a.active{
+      background:linear-gradient(90deg,#08a99e,#00a395a8);
+      color:#fff;
+      box-shadow:0 7px 18px #003e4759
+    }
+
+    .side-bottom{margin-top:auto}
+
+    .theme-switch{
+      border:1px solid #ffffff2b;
+      background:#003c4b8a;
+      color:#ddf1f1;
+      width:100%;
+      height:43px;
+      border-radius:10px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      cursor:pointer
+    }
+
+    .toggle{
+      width:34px;
+      height:18px;
+      border-radius:20px;
+      background:#082f3e;
+      padding:3px
+    }
+
+    .toggle i{
+      display:block;
+      width:12px;
+      height:12px;
+      border-radius:50%;
+      background:#0fc0af;
+      transition:.2s
+    }
+
+    .copastur{
+      border-top:1px solid #ffffff22;
+      margin-top:17px;
+      padding-top:18px;
+      display:flex;
+      justify-content:center
+    }
+
+    .copastur img{
+      max-width:128px;
+      max-height:42px;
+      object-fit:contain
+    }
+
+    .main{
+      min-width:0;
+      display:flex;
+      flex-direction:column
+    }
+
+    .topbar{
+      height:108px;
+      background:var(--card);
+      border-bottom:1px solid var(--border);
+      padding:22px 40px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center
+    }
+
+    .eyebrow{
+      font-size:9px;
+      font-weight:800;
+      letter-spacing:2px;
+      color:var(--primary);
+      margin:0 0 6px
+    }
+
+    .topbar h1{
+      font-size:25px;
+      margin:0
+    }
+
+    .topbar h1 span{font-weight:400}
+
+    .subtitle{
+      font-size:11px;
+      color:var(--muted);
+      margin:5px 0 0
+    }
+
+    .avatar{
+      width:39px;
+      height:39px;
+      border-radius:12px;
+      background:var(--navy);
+      color:#fff;
+      display:grid;
+      place-items:center;
+      font-size:11px;
+      font-weight:800
+    }
+
+    .content{
+      width:100%;
+      max-width:1400px;
+      margin:0 auto;
+      padding:28px 40px
+    }
+
+    .page-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:end;
+      margin-bottom:20px
+    }
+
+    .page-head h2{
+      font-size:21px;
+      margin:0 0 5px
+    }
+
+    .page-head p{
+      font-size:12px;
+      color:var(--muted);
+      margin:0
+    }
+
+    .panel{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:16px;
+      box-shadow:var(--shadow);
+      overflow:hidden
+    }
+
+    .form-area{
+      padding:20px;
+      display:grid;
+      grid-template-columns:1fr 1fr auto;
+      gap:14px;
+      align-items:end;
+      border-bottom:1px solid var(--border)
+    }
+
+    .field label{
+      display:block;
+      font-size:9px;
+      font-weight:800;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:.5px;
+      margin-bottom:6px
+    }
+
+    .field input{
+      width:100%;
+      height:40px;
+      border:1px solid var(--border);
+      border-radius:9px;
+      background:var(--page);
+      color:var(--text);
+      padding:0 11px;
+      outline:none;
+      font-size:11px
+    }
+
+    .field input:focus{border-color:var(--primary)}
+
+    .save{
+      height:40px;
+      border:0;
+      border-radius:9px;
+      background:var(--primary);
+      color:#fff;
+      padding:0 18px;
+      font-size:10px;
+      font-weight:800;
+      cursor:pointer
+    }
+
+    .save:disabled{opacity:.55}
+
+    .message{
+      display:none;
+      margin:18px 20px 0;
+      padding:12px 14px;
+      border-radius:10px;
+      font-size:10px
+    }
+
+    .message.show{display:block}
+    .message.success{background:#e7f7f2;color:#267867}
+    .message.error{background:#fff0f0;color:#a84343}
+
+    .toolbar{
+      padding:16px 18px;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px
+    }
+
+    .search{
+      position:relative;
+      max-width:420px;
+      width:100%
+    }
+
+    .search span{
+      position:absolute;
+      left:12px;
+      top:10px;
+      color:var(--muted)
+    }
+
+    .search input{
+      width:100%;
+      height:38px;
+      border:1px solid var(--border);
+      background:var(--page);
+      color:var(--text);
+      border-radius:9px;
+      padding:0 12px 0 34px;
+      outline:none;
+      font-size:11px
+    }
+
+    .counter{
+      font-size:10px;
+      color:var(--muted)
+    }
+
+    .table-wrap{
+      overflow:auto;
+      min-height:320px;
+      max-height:calc(100vh - 380px)
+    }
+
+    table{
+      border-collapse:collapse;
+      width:100%;
+      font-size:10px;
+      white-space:nowrap
+    }
+
+    th,td{
+      padding:11px 13px;
+      border-bottom:1px solid var(--border);
+      text-align:left
+    }
+
+    th{
+      position:sticky;
+      top:0;
+      background:var(--soft);
+      color:var(--primary-dark);
+      font-size:9px;
+      text-transform:uppercase
+    }
+
+    .action-btn{
+      width:31px;
+      height:31px;
+      border:1px solid #a7d9d4;
+      border-radius:8px;
+      background:var(--card);
+      color:var(--primary-dark);
+      display:grid;
+      place-items:center;
+      cursor:pointer
+    }
+
+    .action-btn svg{
+      width:15px;
+      height:15px;
+      fill:none;
+      stroke:currentColor;
+      stroke-width:2
+    }
+
+    .empty,.loading{
+      padding:70px 20px;
+      text-align:center;
+      color:var(--muted);
+      font-size:12px
+    }
+
+    .loading:before{
+      content:"";
+      display:block;
+      width:28px;
+      height:28px;
+      margin:0 auto 13px;
+      border:3px solid var(--border);
+      border-top-color:var(--primary);
+      border-radius:50%;
+      animation:spin .8s linear infinite
+    }
+
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    .footer{
+      margin-top:auto;
+      padding:13px 40px;
+      border-top:1px solid var(--border);
+      display:flex;
+      justify-content:space-between;
+      color:var(--muted);
+      font-size:8px
+    }
+
+    body.dark{
+      --text:#eff9f9;
+      --muted:#aec3c6;
+      --border:#294d54;
+      --page:#071c22;
+      --card:#102e35;
+      --soft:#153e3e;
+      --shadow:0 14px 35px rgba(0,0,0,.25)
+    }
+
+    body.dark .toggle i{transform:translateX(16px)}
+
+    body.sidebar-collapsed .app{grid-template-columns:82px 1fr}
+    body.sidebar-collapsed .sidebar{padding-left:12px;padding-right:12px}
+    body.sidebar-collapsed .brand{justify-content:center}
+    body.sidebar-collapsed .brand div,
+    body.sidebar-collapsed .menu>span,
+    body.sidebar-collapsed .menu a>span,
+    body.sidebar-collapsed .theme-switch>span,
+    body.sidebar-collapsed .copastur{display:none}
+    body.sidebar-collapsed .menu a{justify-content:center;padding:0}
+    body.sidebar-collapsed .sidebar-toggle{transform:rotate(180deg)}
+
+    @media(max-width:900px){
+      .app{grid-template-columns:82px 1fr}
+      .sidebar{padding:24px 12px}
+      .brand div,.menu>span,.menu a span,.copastur{display:none}
+      .brand{justify-content:center}
+      .menu a{justify-content:center;padding:0}
+      .sidebar-toggle{display:none}
+      .content,.topbar{padding-left:24px;padding-right:24px}
+      .form-area{grid-template-columns:1fr}
+    }
+
+    @media(max-width:650px){
+      .app{display:block}
+      .sidebar{
+        height:66px;
+        position:sticky;
+        padding:10px 13px;
+        flex-direction:row;
+        align-items:center
+      }
+      .brand{border:0;padding:0}
+      .brand img{width:42px;height:42px}
+      .menu{display:flex;margin:0 0 0 auto}
+      .menu a{width:41px;margin:0}
+      .side-bottom{margin:0 0 0 6px}
+      .theme-switch{width:41px}
+      .theme-switch>span{display:none}
+      .topbar{height:auto;padding:18px}
+      .avatar{display:none}
+      .content{padding:18px 14px}
+      .toolbar{align-items:flex-start;flex-direction:column}
+      .footer{padding:12px 18px}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <button id="sidebarToggle" class="sidebar-toggle" type="button" aria-label="Ocultar menu">
+        <svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+
+      <div class="brand">
+        <img src="pix.png" alt="Logo PIX">
+        <div>
+          <strong>Conciliação</strong>
+          <small>PIX • COPASTUR</small>
+        </div>
+      </div>
+      <nav class="menu" aria-label="Menu principal">
+        <span>OPERAÇÕES</span>
+
+        <a href="./index.html">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 15v4h14v-4"/></svg>
+          <span>Importar Arquivos</span>
+        </a>
+
+        <a href="./conciliacao.html">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="m8.5 12 2.3 2.3 4.8-5"/></svg>
+          <span>Conciliação</span>
+        </a>
+
+        <a href="./extratos.html">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l4 4v14H7zM14 3v5h5M10 12h5m-5 4h5"/></svg>
+          <span>Extratos</span>
+        </a>
+
+        <a href="./cadastro-clientes.html" class="active">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19v-1a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v1"/><circle cx="10" cy="7" r="4"/><path d="M18 8v6M15 11h6"/></svg>
+          <span>Cadastros</span>
+        </a>
+      </nav>
+
+      <div class="side-bottom">
+        <button id="themeButton" class="theme-switch">
+          <span>☼</span>
+          <span class="toggle"><i></i></span>
+          <span>◐</span>
+        </button>
+
+        <div class="copastur">
+          <img src="copastur.png" alt="Copastur">
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">SMARTOPERATIONS</p>
+          <h1>Conciliação PIX <span>— Cadastro de Clientes</span></h1>
+          <p class="subtitle">De/Para entre o nome do cliente PIX e o Grupo Cliente da Base Benner</p>
+        </div>
+        <div class="avatar">RL</div>
+      </header>
+
+      <section class="content">
+        <div class="page-head">
+          <div>
+            <h2>Cadastro de clientes</h2>
+            <p>Cadastre as equivalências usadas na validação da conciliação.</p>
+          </div>
+        </div>
+
+        <section class="panel">
+          <form id="mappingForm">
+            <div class="form-area">
+              <div class="field">
+                <label for="pixClient">Cliente PIX</label>
+                <input id="pixClient" name="Cliente PIX" required placeholder="Ex.: 57929 - KLABIN S.A.">
+              </div>
+
+              <div class="field">
+                <label for="bennerGroup">Grupo Cliente</label>
+                <input id="bennerGroup" name="Grupo Cliente" required placeholder="Ex.: KLABIN - MA02 - MONTE ALEGRE PR">
+              </div>
+
+              <button id="saveButton" class="save" type="submit">Salvar cadastro</button>
+            </div>
+          </form>
+
+          <div id="message" class="message"></div>
+
+          <div class="toolbar">
+            <div class="search">
+              <span>⌕</span>
+              <input id="searchInput" type="search" placeholder="Buscar Cliente PIX ou Grupo Cliente">
+            </div>
+            <span id="counter" class="counter"></span>
+          </div>
+
+          <div id="tableContainer" class="table-wrap">
+            <div class="loading">Carregando cadastros...</div>
+          </div>
+        </section>
+      </section>
+
+      <footer class="footer">
+        <span>Smartoperations • Conciliação PIX</span>
+        <span>Front v2.6.0</span>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    const API_URL="https://script.google.com/macros/s/AKfycbz9yjkk4szt3_qU7YD_I2lsCdy15AjZjoL9o2Jkudy8KB_2EVozqQX1izImvjUE-aDmrA/exec";
+
+    let records=[];
+    let filtered=[];
+    let editingRow=null;
+
+    const tableContainer=document.getElementById("tableContainer");
+    const searchInput=document.getElementById("searchInput");
+    const mappingForm=document.getElementById("mappingForm");
+    const saveButton=document.getElementById("saveButton");
+    const sidebarToggle=document.getElementById("sidebarToggle");
+
+    if(localStorage.getItem("pix-theme")==="dark"){
+      document.body.classList.add("dark");
+    }
+
+    if(localStorage.getItem("pix-sidebar")==="collapsed"){
+      document.body.classList.add("sidebar-collapsed");
+    }
+
+    document.getElementById("themeButton").onclick=()=>{
+      document.body.classList.toggle("dark");
+      localStorage.setItem(
+        "pix-theme",
+        document.body.classList.contains("dark")?"dark":"light"
+      );
+    };
+
+    sidebarToggle.onclick=()=>{
+      const collapsed=document.body.classList.toggle("sidebar-collapsed");
+      localStorage.setItem(
+        "pix-sidebar",
+        collapsed?"collapsed":"expanded"
+      );
+    };
+
+    function loadMappings(){
+      tableContainer.innerHTML='<div class="loading">Carregando cadastros...</div>';
+
+      const callback=`clientMappings_${Date.now()}`;
+      const script=document.createElement("script");
+
+      window[callback]=data=>{
+        delete window[callback];
+        script.remove();
+
+        if(!data||!data.success){
+          showMessage(
+            data&&data.message
+              ? data.message
+              : "Não foi possível carregar os cadastros.",
+            "error"
+          );
+          return;
+        }
+
+        records=Array.isArray(data.records)?data.records:[];
+        applyFilter();
+      };
+
+      script.onerror=()=>{
+        delete window[callback];
+        script.remove();
+        showMessage("Falha ao acessar o Apps Script.","error");
+      };
+
+      script.src=
+        `${API_URL}?action=listClientMappings&callback=${callback}&_=${Date.now()}`;
+
+      document.body.appendChild(script);
+    }
+
+    function applyFilter(){
+      const query=normalize(searchInput.value);
+
+      filtered=!query
+        ? records
+        : records.filter(record=>
+            normalize(record["Cliente PIX"]).includes(query)||
+            normalize(record["Grupo Cliente"]).includes(query)
+          );
+
+      renderTable();
+
+      document.getElementById("counter").textContent=
+        `${filtered.length} de ${records.length} cadastros`;
+    }
+
+    function renderTable(){
+      if(!filtered.length){
+        tableContainer.innerHTML=
+          '<div class="empty">Nenhum cadastro encontrado.</div>';
+        return;
+      }
+
+      tableContainer.innerHTML=`
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th>Cliente PIX</th>
+              <th>Grupo Cliente</th>
+              <th>Atualizado em</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            ${filtered.map(record=>`
+              <tr>
+                <td>
+                  <button
+                    class="action-btn"
+                    data-edit="${record._rowNumber}"
+                    title="Editar"
+                    aria-label="Editar cadastro"
+                  >
+                    <svg viewBox="0 0 24 24">
+                      <path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/>
+                    </svg>
+                  </button>
+                </td>
+
+                <td>${escapeHtml(record["Cliente PIX"])}</td>
+                <td>${escapeHtml(record["Grupo Cliente"])}</td>
+                <td>${escapeHtml(record["Atualizado em"])}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      `;
+    }
+
+    tableContainer.onclick=event=>{
+      const button=event.target.closest("[data-edit]");
+
+      if(!button)return;
+
+      const record=records.find(
+        item=>Number(item._rowNumber)===Number(button.dataset.edit)
+      );
+
+      if(!record)return;
+
+      editingRow=Number(record._rowNumber);
+
+      document.getElementById("pixClient").value=
+        record["Cliente PIX"];
+
+      document.getElementById("bennerGroup").value=
+        record["Grupo Cliente"];
+
+      saveButton.textContent="Salvar alteração";
+
+      window.scrollTo({
+        top:0,
+        behavior:"smooth"
+      });
+    };
+
+    mappingForm.onsubmit=async event=>{
+      event.preventDefault();
+
+      saveButton.disabled=true;
+      saveButton.textContent="Salvando...";
+
+      const record=Object.fromEntries(
+        new FormData(mappingForm).entries()
+      );
+
+      try{
+        await fetch(
+          API_URL,
+          {
+            method:"POST",
+            mode:"no-cors",
+            body:new URLSearchParams({
+              payload:JSON.stringify({
+                action:"saveClientMapping",
+                rowNumber:editingRow,
+                record
+              })
+            })
+          }
+        );
+
+        showMessage(
+          editingRow
+            ? "Cadastro atualizado."
+            : "Cadastro salvo.",
+          "success"
+        );
+
+        mappingForm.reset();
+        editingRow=null;
+        saveButton.textContent="Salvar cadastro";
+
+        setTimeout(loadMappings,1200);
+
+      }catch(error){
+        showMessage(
+          "Não foi possível salvar o cadastro.",
+          "error"
+        );
+      }finally{
+        saveButton.disabled=false;
+
+        if(editingRow===null){
+          saveButton.textContent="Salvar cadastro";
+        }
+      }
+    };
+
+    searchInput.oninput=applyFilter;
+
+    function showMessage(text,type){
+      const element=document.getElementById("message");
+      element.textContent=text;
+      element.className=`message show ${type}`;
+    }
+
+    function normalize(value){
+      return String(value??"")
+        .trim()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g,"")
+        .toLowerCase();
+    }
+
+    function escapeHtml(value){
+      const div=document.createElement("div");
+      div.textContent=String(value??"");
+      return div.innerHTML;
+    }
+
+    loadMappings();
+  </script>
+</body>
+</html>
